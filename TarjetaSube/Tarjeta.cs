@@ -6,8 +6,9 @@ namespace TarjetaSube
     public class Tarjeta
     {
         public int Numero { get; private set; }
-        public decimal Saldo { get; private set; }
-        private const decimal SALDO_MAXIMO = 40000m;
+        public decimal Saldo { get; set; }
+        public const decimal SALDO_MAXIMO = 40000m;
+        public const decimal SALDO_MINIMO = -1200m;
         private static readonly List<int> MONTOS_PERMITIDOS = new List<int>
             { 2000, 3000, 4000, 5000, 8000, 10000, 15000, 20000, 25000, 30000 };
 
@@ -25,20 +26,22 @@ namespace TarjetaSube
                 return false;
             }
 
-            if (Saldo + montoACargar > SALDO_MAXIMO)
+            decimal nuevoSaldo = Saldo + montoACargar;
+
+            if (nuevoSaldo > SALDO_MAXIMO)
             {
                 Console.WriteLine($"No se puede cargar. Saldo máximo: ${SALDO_MAXIMO}");
                 return false;
             }
 
-            Saldo += montoACargar;
+            Saldo = nuevoSaldo;
             Console.WriteLine($"Carga exitosa. Nuevo saldo: ${Saldo}");
             return true;
         }
 
         public bool PagarBoleto(decimal tarifa)
         {
-            if (Saldo < tarifa)
+            if (Saldo - tarifa < SALDO_MINIMO)
             {
                 Console.WriteLine("Saldo insuficiente.");
                 return false;

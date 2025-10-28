@@ -56,5 +56,147 @@ namespace TarjetaSubeTest
             Assert.IsFalse(puedePagar);
             Assert.AreEqual(0, tarjeta.Saldo);
         }
+
+        [Test]
+        public void PagarConSaldoNegativo_DentroDelLimite_Test()
+        {
+            // Arrange - Cargamos $2000 (monto permitido) y gastamos hasta acercarnos al límite
+            tarjeta.CargarSaldo(2000); // Saldo: 2000
+            Colectivo colectivo = new Colectivo("123");
+
+            // Primer viaje: 2000 - 1580 = 420
+            colectivo.PagarCon(tarjeta);
+            // Segundo viaje: 420 - 1580 = -1160 (dentro del límite -1200)
+            colectivo.PagarCon(tarjeta);
+
+            // Act - Intentamos tercer viaje: -1160 - 1580 = -2740 (FUERA del límite -1200)
+            bool puedePagar = colectivo.PagarCon(tarjeta);
+
+            // Assert - No debería permitir este tercer pago
+            Assert.IsFalse(puedePagar);
+            Assert.AreEqual(-1160, tarjeta.Saldo); // Se quedó en -1160, no en -2740
+        }
+
+
+        [Test]
+        public void PagarConSaldoNegativo_FueraDelLimite_Test()
+        {
+            // Arrange - tarjeta con saldo -1000 (cerca del límite)
+            tarjeta.CargarSaldo(2000);
+            Colectivo colectivo = new Colectivo("123");
+
+            // Primero pagamos dos viajes para llegar cerca del límite
+            colectivo.PagarCon(tarjeta); // Saldo: 2000 - 1580 = 420
+            colectivo.PagarCon(tarjeta); // Saldo: 420 - 1580 = -1160
+
+            // Act - intentamos un tercer viaje que superaría el límite -1200
+            bool puedePagar = colectivo.PagarCon(tarjeta); // -1160 - 1580 = -2740 (supera -1200)
+
+            // Assert - no debería permitir el pago
+            Assert.IsFalse(puedePagar);
+            Assert.AreEqual(-1160, tarjeta.Saldo); // El saldo no cambió
+        }
+
+        [Test]
+        public void CargarSaldo_ConSaldoNegativo_Test()
+        {
+            // Arrange - tarjeta con saldo negativo DENTRO del límite
+            tarjeta.CargarSaldo(2000); // Saldo: 2000
+            Colectivo colectivo = new Colectivo("123");
+            colectivo.PagarCon(tarjeta); // Saldo: 2000 - 1580 = 420
+            colectivo.PagarCon(tarjeta); // Saldo: 420 - 1580 = -1160
+
+            // Act - cargamos saldo
+            bool cargaExitosa = tarjeta.CargarSaldo(2000);
+
+            // Assert - la carga paga la deuda: -1160 + 2000 = 840
+            Assert.IsTrue(cargaExitosa);
+            Assert.AreEqual(840, tarjeta.Saldo);
+        }
+
+        [Test]
+        public void FranquiciaCompleta_SiemprePuedePagar_Test()
+        {
+            // Arrange
+            FranquiciaCompleta tarjetaFranquicia = new FranquiciaCompleta(99999);
+            Colectivo colectivo = new Colectivo("123");
+
+            // Act - Intentar pagar con saldo 0
+            bool puedePagar = colectivo.PagarCon(tarjetaFranquicia);
+
+            // Assert - Debería poder pagar siempre
+            Assert.IsTrue(puedePagar);
+            Assert.AreEqual(0, tarjetaFranquicia.Saldo); // El saldo no cambia
+        }
+
+        [Test]
+        public void FranquiciaCompleta_MultiplesViajes_Test()
+        {
+            // Arrange
+            FranquiciaCompleta tarjetaFranquicia = new FranquiciaCompleta(99999);
+            Colectivo colectivo = new Colectivo("123");
+
+            // Act - Intentar pagar 5 viajes seguidos
+            bool resultado1 = colectivo.PagarCon(tarjetaFranquicia);
+            bool resultado2 = colectivo.PagarCon(tarjetaFranquicia);
+            bool resultado3 = colectivo.PagarCon(tarjetaFranquicia);
+
+            // Assert - Todos deberían funcionar
+            Assert.IsTrue(resultado1);
+            Assert.IsTrue(resultado2);
+            Assert.IsTrue(resultado3);
+            Assert.AreEqual(0, tarjetaFranquicia.Saldo); // Saldo sigue en 0
+        }
+        [Test]
+        public void MedioBoleto_PagaMitad_Test()
+        {
+            // Arrange
+            MedioBoleto tarjetaMedio = new MedioBoleto(88888);
+            tarjetaMedio.CargarSaldo(2000);
+            Colectivo colectivo = new Colectivo("123");
+
+            // Act
+            bool puedePagar = colectivo.PagarCon(tarjetaMedio);
+
+            // Assert - Debería pagar la mitad: 1580 / 2 = 790
+            Assert.IsTrue(puedePagar);
+            Assert.AreEqual(2000 - 790, tarjetaMedio.Saldo); // 2000 - 790 = 1210
+        }
+
+        [Test]
+        public void MedioBoleto_ComparacionConTarjetaNormal_Test()
+        {
+            // Arrange
+            MedioBoleto tarjetaMedio = new MedioBoleto(77777);
+            Tarjeta tarjetaNormal = new Tarjeta(66666);
+
+            tarjetaMedio.CargarSaldo(2000);
+            tarjetaNormal.CargarSaldo(2000);
+
+            Colectivo colectivo = new Colectivo("123");
+
+            // Act
+            colectivo.PagarCon(tarjetaMedio);
+            colectivo.PagarCon(tarjetaNormal);
+
+            // Assert - Medio boleto debería gastar la mitad
+            Assert.AreEqual(2000 - 790, tarjetaMedio.Saldo);   // 1210
+            Assert.AreEqual(2000 - 1580, tarjetaNormal.Saldo); // 420
+        }
+
+        [Test]
+        public void BoletoGratuito_SiemprePuedePagar_Test()
+        {
+            // Arrange
+            BoletoGratuito tarjetaGratuita = new BoletoGratuito(55555);
+            Colectivo colectivo = new Colectivo("123");
+
+            // Act - Intentar pagar con saldo 0
+            bool puedePagar = colectivo.PagarCon(tarjetaGratuita);
+
+            // Assert - Debería poder pagar siempre (gratuito)
+            Assert.IsTrue(puedePagar);
+            Assert.AreEqual(0, tarjetaGratuita.Saldo); // El saldo no cambia
+        }
     }
 }
