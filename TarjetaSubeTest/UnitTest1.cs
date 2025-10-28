@@ -1,5 +1,6 @@
-using TarjetaSube;
 using NUnit.Framework;
+using System;
+using TarjetaSube;
 
 namespace TarjetaSubeTest
 {
@@ -12,6 +13,22 @@ namespace TarjetaSubeTest
         {
             tarjeta = new Tarjeta(12345); // Necesita número ahora
         }
+
+        // ####################################
+        // ########### TESTEO MAIN ############
+        // ####################################
+
+        [Test]
+        public void Program_Main_ExecuteWithoutErrors_Test()
+        {
+            // Este test asegura que el Program.cs se puede ejecutar sin errores
+            Program.Main(Array.Empty<string>());
+            Assert.IsTrue(true); // Si llega aquí, no hubo excepciones
+        }
+
+        // ###############################################
+        // ########### TESTEO TARJETA GENERAL ############
+        // ###############################################
 
         [Test]
         public void CargaMontoPermitido_2000_Test()
@@ -114,6 +131,10 @@ namespace TarjetaSubeTest
             Assert.AreEqual(840, tarjeta.Saldo);
         }
 
+        // ###############################################
+        // ########### TESTEO FRANQ. COMPLETA ############
+        // ###############################################
+
         [Test]
         public void FranquiciaCompleta_SiemprePuedePagar_Test()
         {
@@ -147,7 +168,28 @@ namespace TarjetaSubeTest
             Assert.IsTrue(resultado3);
             Assert.AreEqual(0, tarjetaFranquicia.Saldo); // Saldo sigue en 0
         }
+
         [Test]
+        public void FranquiciaCompleta_NoDescuestaSaldo_Test()
+        {
+            // Arrange
+            FranquiciaCompleta tarjetaGratuita = new FranquiciaCompleta(55555);
+            tarjetaGratuita.CargarSaldo(2000);
+            Colectivo colectivo = new Colectivo("123");
+
+            // Act
+            bool resultado = colectivo.PagarCon(tarjetaGratuita);
+
+            // Assert - Saldo debería seguir en 2000 (gratuito)
+            Assert.IsTrue(resultado);
+            Assert.AreEqual(2000, tarjetaGratuita.Saldo);
+        }
+
+        [Test]
+        // ############################################
+        // ############ TESTEO MEDIO BOLETO ###########
+        // ############################################
+
         public void MedioBoleto_PagaMitad_Test()
         {
             // Arrange
@@ -185,6 +227,26 @@ namespace TarjetaSubeTest
         }
 
         [Test]
+        public void MedioBoleto_PagaExactamenteLaMitad_Test()
+        {
+            // Arrange
+            MedioBoleto tarjetaMedio = new MedioBoleto(88888);
+            tarjetaMedio.CargarSaldo(2000);
+            Colectivo colectivo = new Colectivo("123");
+
+            // Act
+            bool resultado = colectivo.PagarCon(tarjetaMedio);
+
+            // Assert - Debería pagar 1580 / 2 = 790
+            Assert.IsTrue(resultado);
+            Assert.AreEqual(2000 - 790, tarjetaMedio.Saldo);
+        }
+
+        [Test]
+
+        // ############################################
+        // ########### BOLETO EST. GRATUITO ###########
+        // ############################################
         public void BoletoGratuito_SiemprePuedePagar_Test()
         {
             // Arrange
@@ -197,6 +259,22 @@ namespace TarjetaSubeTest
             // Assert - Debería poder pagar siempre (gratuito)
             Assert.IsTrue(puedePagar);
             Assert.AreEqual(0, tarjetaGratuita.Saldo); // El saldo no cambia
+        }
+
+        [Test]
+        public void BoletoGratuito_NoDescuestaSaldo_Test()
+        {
+            // Arrange
+            BoletoGratuito tarjetaGratuita = new BoletoGratuito(55555);
+            tarjetaGratuita.CargarSaldo(2000);
+            Colectivo colectivo = new Colectivo("123");
+
+            // Act
+            bool resultado = colectivo.PagarCon(tarjetaGratuita);
+
+            // Assert - Saldo debería seguir en 2000 (gratuito)
+            Assert.IsTrue(resultado);
+            Assert.AreEqual(2000, tarjetaGratuita.Saldo);
         }
     }
 }
