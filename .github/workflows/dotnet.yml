@@ -1,4 +1,4 @@
-name: .NET Tests
+name: .NET Tests with Coverage
 
 on:
   push:
@@ -22,7 +22,12 @@ jobs:
       run: dotnet restore
       
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore --configuration Release
       
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+    - name: Test with Coverage
+      run: dotnet test --no-build --configuration Release --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+      
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./TarjetaSubeTest/coverage.opencover.xml
