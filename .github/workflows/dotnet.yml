@@ -1,33 +1,40 @@
-name: .NET Tests with Coverage
+name: .NET CI/CD with Code Coverage
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - '**'
   pull_request:
-    branches: [ main ]
+    branches:
+      - '**'
 
 jobs:
-  test:
+
+  build-and-test:
+
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+   
+    - name: Setup .NET 5.0
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 5.0
-        
+        dotnet-version: '5.0.x'
+
     - name: Restore dependencies
       run: dotnet restore
-      
+
     - name: Build
-      run: dotnet build --no-restore --configuration Release --verbosity normal
-      
-    - name: Test with Coverage
-      run: dotnet test --no-build --configuration Release --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
-      
+      run: dotnet build --no-restore
+
+    - name: Run tests with coverage
+      run: dotnet test --no-build --collect:"XPlat Code Coverage"
+
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v5
       with:
-        file: ./TarjetaSubeTest/coverage.opencover.xml
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./**/coverage.cobertura.xml
