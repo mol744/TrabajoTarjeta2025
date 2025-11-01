@@ -14,5 +14,12 @@ namespace TarjetaSube
             Console.WriteLine($"Viaje gratuito con Boleto Estudiantil. Saldo: ${Saldo}");
             return true;
         }
+
+        public override string ObtenerTipoTarjeta()
+        {
+            return "BoletoGratuito";
+        }
+
+
     }
 }

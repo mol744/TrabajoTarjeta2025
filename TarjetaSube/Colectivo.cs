@@ -14,7 +14,7 @@ namespace TarjetaSube
 
         public bool PagarCon(Tarjeta tarjeta)
         {
-            
+
             decimal tarifaAPagar = TARIFA_BASICA;
 
             if (tarjeta is FranquiciaCompleta || tarjeta is BoletoGratuito)
@@ -40,6 +40,11 @@ namespace TarjetaSube
         public void MostrarTarifa()
         {
             Console.WriteLine($"Línea {Linea} - Tarifa: ${TARIFA_BASICA}");
+        }
+
+        public string ObtenerLinea()
+        {
+           return Linea;
         }
     }
 }

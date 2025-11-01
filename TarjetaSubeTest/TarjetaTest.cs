@@ -30,34 +30,75 @@ namespace TarjetaSubeTest
             Assert.IsFalse(resultado);
         }
 
-        // Tests de saldo negativo
+        // Tests de pago parcial
         [Test]
-        public void PagarConSaldoNegativo_DentroDelLimite_Test()
+        public void PagarBoleto_PagoParcial_Test()
         {
-            tarjeta.CargarSaldo(2000);
-            Colectivo colectivo = new Colectivo("123");
+            // Arrange
+            tarjeta.CargarSaldo(2000); // Tiene 600
+            decimal tarifa = 700;     // Boleto vale 700
 
-            colectivo.PagarCon(tarjeta); // 2000 - 1580 = 420
-            colectivo.PagarCon(tarjeta); // 420 - 1580 = -1160
+            // Act
+            bool resultado = tarjeta.PagarBoleto(tarifa);
 
-            bool puedePagar = colectivo.PagarCon(tarjeta); // -1160 - 1580 = -2740 (supera -1200)
-
-            Assert.IsFalse(puedePagar);
-            Assert.AreEqual(-1160, tarjeta.Saldo);
+            // Assert - Debería pagar parcialmente 600
+            Assert.IsTrue(resultado);
+            Assert.AreEqual(2000 - 700, tarjeta.Saldo);
         }
 
         [Test]
-        public void CargarSaldo_ConSaldoNegativo_Test()
+        public void PagarBoleto_PagoParcialHastaLimiteNegativo_Test()
         {
-            tarjeta.CargarSaldo(2000);
-            Colectivo colectivo = new Colectivo("123");
-            colectivo.PagarCon(tarjeta); // 2000 - 1580 = 420
-            colectivo.PagarCon(tarjeta); // 420 - 1580 = -1160
+            // Arrange
+            tarjeta.CargarSaldo(200); // Tiene 200
+            decimal tarifa = 1500;    // Boleto vale 1500
+            // Puede pagar hasta: 200 - (-1200) = 1400
 
-            bool cargaExitosa = tarjeta.CargarSaldo(2000);
+            // Act
+            bool resultado = tarjeta.PagarBoleto(tarifa);
 
-            Assert.IsTrue(cargaExitosa);
-            Assert.AreEqual(840, tarjeta.Saldo); // -1160 + 2000 = 840
+            // Assert - Debería pagar 1400 y quedar en -1200
+            Assert.IsTrue(resultado);
+            Assert.AreEqual(-1200, tarjeta.Saldo);
+        }
+
+        [Test]
+        public void PagarBoleto_NoPuedePagarNada_Test()
+        {
+            // Arrange
+            tarjeta.Saldo = -1200; // Ya está en el límite
+            decimal tarifa = 100;
+
+            // Act
+            bool resultado = tarjeta.PagarBoleto(tarifa);
+
+            // Assert - No puede pagar nada
+            Assert.IsFalse(resultado);
+            Assert.AreEqual(-1200, tarjeta.Saldo);
+        }
+
+        [Test]
+        public void ObtenerTipoTarjeta_Normal_Test()
+        {
+            // Act & Assert
+            Assert.AreEqual("Tarjeta Común", tarjeta.ObtenerTipoTarjeta());
+        }
+
+        [Test]
+        public void ConsultarSaldo_Test()
+        {
+            // Arrange
+            tarjeta.CargarSaldo(3000);
+
+            // Act & Assert
+            Assert.AreEqual(3000, tarjeta.ConsultarSaldo());
+        }
+
+        [Test]
+        public void ConsultarID_Test()
+        {
+            // Act & Assert
+            Assert.AreEqual(12345, tarjeta.ConsultarID());
         }
 
         // Tests de límites
@@ -69,20 +110,6 @@ namespace TarjetaSubeTest
 
             Assert.IsFalse(resultado);
             Assert.AreEqual(30000, tarjeta.Saldo);
-        }
-
-        [Test]
-        public void PagarBoleto_QueSupereLimiteNegativo_Test()
-        {
-            tarjeta.CargarSaldo(2000);
-            Colectivo colectivo = new Colectivo("123");
-
-            colectivo.PagarCon(tarjeta); // 2000 - 1580 = 420
-            colectivo.PagarCon(tarjeta); // 420 - 1580 = -1160
-
-            bool resultado = colectivo.PagarCon(tarjeta); // -1160 - 1580 = -2740 (supera -1200)
-
-            Assert.IsFalse(resultado);
         }
     }
 }

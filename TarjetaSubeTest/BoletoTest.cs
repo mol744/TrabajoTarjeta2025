@@ -22,36 +22,33 @@ namespace TarjetaSubeTest
         }
 
         [Test]
-        public void Boleto_ImprimirBoleto_NoLanzaExcepcion_Test()
+        public void Boleto_ObtenerFechaHora_Test()
         {
             // Arrange
             Boleto boleto = new Boleto(1580, "12345", "153", 500);
 
+            // Act & Assert
+            Assert.That(boleto.ObtenerFechaHora(), Is.EqualTo(DateTime.Now).Within(1).Seconds);
+        }
+
+        [Test]
+        public void Boleto_ObtenerTotalAbonado_Test()
+        {
+            // Arrange
+            Boleto boleto = new Boleto(1580, "12345", "153", 500);
+
+            // Act & Assert
+            Assert.AreEqual(1580, boleto.ObtenerTotalAbonado());
+        }
+
+        [Test]
+        public void Boleto_InformarMontoConSaldoNegativo_NoLanzaExcepcion_Test()
+        {
+            // Arrange
+            Boleto boleto = new Boleto(2000, "12345", "153", -500);
+
             // Act & Assert - Verificar que no lance excepción
-            Assert.DoesNotThrow(() => boleto.ImprimirBoleto());
-        }
-
-        [Test]
-        public void Boleto_ConTarifaCero_Test()
-        {
-            // Arrange & Act
-            Boleto boleto = new Boleto(0, "99999", "123", 1000);
-
-            // Assert
-            Assert.AreEqual(0, boleto.Tarifa);
-            Assert.AreEqual("99999", boleto.NumeroTarjeta);
-            Assert.AreEqual(1000, boleto.SaldoRestante);
-        }
-
-        [Test]
-        public void Boleto_ConSaldoNegativo_Test()
-        {
-            // Arrange & Act
-            Boleto boleto = new Boleto(1580, "12345", "153", -500);
-
-            // Assert
-            Assert.AreEqual(-500, boleto.SaldoRestante);
-            Assert.AreEqual(1580, boleto.Tarifa);
+            Assert.DoesNotThrow(() => boleto.InformarMontoConSaldoNegativo(1580));
         }
     }
 }

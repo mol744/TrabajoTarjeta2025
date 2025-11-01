@@ -10,18 +10,13 @@ namespace TarjetaSube
 
         public new bool PagarBoleto(decimal tarifa)
         {
-            // Medio boleto paga la mitad
             decimal tarifaMedio = tarifa / 2;
-
-            if (Saldo - tarifaMedio < SALDO_MINIMO)
-            {
-                Console.WriteLine("Saldo insuficiente. Límite negativo alcanzado.");
-                return false;
-            }
-
-            Saldo -= tarifaMedio;
-            Console.WriteLine($"Pago realizado con Medio Boleto. Tarifa: ${tarifaMedio}. Nuevo saldo: ${Saldo}");
-            return true;
+            return base.PagarBoleto(tarifaMedio);
         }
+        public virtual string ObtenerTipoTarjeta()
+        {
+            return "MedioBoleto";
+        }
+
     }
 }

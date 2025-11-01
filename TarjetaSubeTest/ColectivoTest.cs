@@ -25,16 +25,13 @@ namespace TarjetaSubeTest
         [Test]
         public void PagarViajeSinSaldoSuficiente_Test()
         {
-            // Arrange
             Tarjeta tarjeta = new Tarjeta(22222);
             Colectivo colectivo = new Colectivo("123");
 
-            // Act
             bool puedePagar = colectivo.PagarCon(tarjeta);
 
-            // Assert
-            Assert.IsFalse(puedePagar);
-            Assert.AreEqual(0, tarjeta.Saldo);
+            Assert.IsTrue(puedePagar);
+            Assert.AreEqual(-1200, tarjeta.Saldo);
         }
 
         [Test]
@@ -62,6 +59,15 @@ namespace TarjetaSubeTest
 
             // Act & Assert - Solo verificar que no lance excepción
             Assert.DoesNotThrow(() => colectivo.MostrarTarifa());
+        }
+        [Test]
+        public void Colectivo_ObtenerLinea_Test()
+        {
+            // Arrange
+            Colectivo colectivo = new Colectivo("123");
+
+            // Act & Assert
+            Assert.AreEqual("123", colectivo.ObtenerLinea());
         }
     }
 }

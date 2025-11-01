@@ -43,13 +43,40 @@ namespace TarjetaSube
         {
             if (Saldo - tarifa < SALDO_MINIMO)
             {
-                Console.WriteLine("Saldo insuficiente.");
-                return false;
+                decimal maximoPagoPosible = Saldo - SALDO_MINIMO;
+
+                if (maximoPagoPosible > 0)
+                {
+                    Saldo -= maximoPagoPosible;
+                    Console.WriteLine($"Pago PARCIAL realizado. Se pagó: ${maximoPagoPosible} de ${tarifa}. Nuevo saldo: ${Saldo}");
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine("Saldo insuficiente. Límite negativo alcanzado.");
+                    return false;
+                }
             }
 
             Saldo -= tarifa;
-            Console.WriteLine($"Pago realizado. Nuevo saldo: ${Saldo}");
+            Console.WriteLine($"Pago COMPLETO realizado. Tarifa: ${tarifa}. Nuevo saldo: ${Saldo}");
             return true;
+        }
+
+        public virtual string ObtenerTipoTarjeta()
+        {
+            return "Tarjeta Común";
+        }
+
+        public decimal ConsultarSaldo()
+        {
+            return Saldo;
+        }
+
+
+        public int ConsultarID()
+        {
+            return Numero;
         }
     }
 }

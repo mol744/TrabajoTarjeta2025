@@ -23,5 +23,23 @@ namespace TarjetaSube
         {
             Console.WriteLine($"| Fecha: {FechaHora} | Tarifa: {Tarifa} | Nro: {NumeroTarjeta} | Línea: {LineaColectivo} | Saldo: {SaldoRestante} |");
         }
+
+        public DateTime ObtenerFechaHora()
+        {
+            return FechaHora;
+        }
+
+        public decimal ObtenerTotalAbonado()
+        {
+            return Tarifa;
+        }
+
+        public void InformarMontoConSaldoNegativo(decimal tarifaNormal)
+        {
+            if (Tarifa > tarifaNormal) 
+            {
+                Console.WriteLine($"ATENCIÓN: Monto final abonado (${Tarifa}) superior a tarifa normal (${tarifaNormal}) debido a saldo negativo.");
+            }
+        }
     }
 }
