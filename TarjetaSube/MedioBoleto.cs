@@ -8,19 +8,18 @@ namespace TarjetaSube
         {
         }
 
-        public new bool PagarBoleto(decimal tarifa)
+        public override bool PagarBoleto(decimal tarifa)
         {
             // Medio boleto paga la mitad
-            decimal tarifaMedio = tarifa / 2;
 
-            if (Saldo - tarifaMedio < SALDO_MINIMO)
+            if (Saldo - tarifa < SALDO_MINIMO)
             {
                 Console.WriteLine("Saldo insuficiente. Límite negativo alcanzado.");
                 return false;
             }
 
-            Saldo -= tarifaMedio;
-            Console.WriteLine($"Pago realizado con Medio Boleto. Tarifa: ${tarifaMedio}. Nuevo saldo: ${Saldo}");
+            Saldo -= tarifa;
+            Console.WriteLine($"Pago realizado con Medio Boleto. Tarifa: ${tarifa}. Nuevo saldo: ${Saldo}");
             return true;
         }
     }

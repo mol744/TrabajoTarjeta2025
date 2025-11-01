@@ -39,7 +39,7 @@ namespace TarjetaSube
             return true;
         }
 
-        public bool PagarBoleto(decimal tarifa)
+        public virtual bool PagarBoleto(decimal tarifa)
         {
             if (Saldo - tarifa < SALDO_MINIMO)
             {

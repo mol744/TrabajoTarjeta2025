@@ -17,7 +17,7 @@ namespace TarjetaSube
             
             decimal tarifaAPagar = TARIFA_BASICA;
 
-            if (tarjeta is FranquiciaCompleta || tarjeta is BoletoGratuito)
+            if (tarjeta is FranquiciaCompleta )
             {
                 tarifaAPagar = 0;
             }

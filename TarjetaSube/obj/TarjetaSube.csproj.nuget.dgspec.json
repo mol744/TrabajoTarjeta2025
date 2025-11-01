@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\joaqu\\Documents\\Joaquin\\IPS\\6TO\\Adapt. amb. de Trabajo\\repos\\Dupla TJ\\TP_Tarjeta\\TarjetaSube\\TarjetaSube.csproj": {}
+    "C:\\Users\\tomim\\OneDrive\\Escritorio\\VSCODE\\Tarjeta_cole\\TrabajoTarjeta2025_rama3\\TrabajoTarjeta2025\\TarjetaSube\\TarjetaSube.csproj": {}
   },
   "projects": {
-    "C:\\Users\\joaqu\\Documents\\Joaquin\\IPS\\6TO\\Adapt. amb. de Trabajo\\repos\\Dupla TJ\\TP_Tarjeta\\TarjetaSube\\TarjetaSube.csproj": {
+    "C:\\Users\\tomim\\OneDrive\\Escritorio\\VSCODE\\Tarjeta_cole\\TrabajoTarjeta2025_rama3\\TrabajoTarjeta2025\\TarjetaSube\\TarjetaSube.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\joaqu\\Documents\\Joaquin\\IPS\\6TO\\Adapt. amb. de Trabajo\\repos\\Dupla TJ\\TP_Tarjeta\\TarjetaSube\\TarjetaSube.csproj",
+        "projectUniqueName": "C:\\Users\\tomim\\OneDrive\\Escritorio\\VSCODE\\Tarjeta_cole\\TrabajoTarjeta2025_rama3\\TrabajoTarjeta2025\\TarjetaSube\\TarjetaSube.csproj",
         "projectName": "TarjetaSube",
-        "projectPath": "C:\\Users\\joaqu\\Documents\\Joaquin\\IPS\\6TO\\Adapt. amb. de Trabajo\\repos\\Dupla TJ\\TP_Tarjeta\\TarjetaSube\\TarjetaSube.csproj",
-        "packagesPath": "C:\\Users\\joaqu\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\joaqu\\Documents\\Joaquin\\IPS\\6TO\\Adapt. amb. de Trabajo\\repos\\Dupla TJ\\TP_Tarjeta\\TarjetaSube\\obj\\",
+        "projectPath": "C:\\Users\\tomim\\OneDrive\\Escritorio\\VSCODE\\Tarjeta_cole\\TrabajoTarjeta2025_rama3\\TrabajoTarjeta2025\\TarjetaSube\\TarjetaSube.csproj",
+        "packagesPath": "C:\\Users\\tomim\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\tomim\\OneDrive\\Escritorio\\VSCODE\\Tarjeta_cole\\TrabajoTarjeta2025_rama3\\TrabajoTarjeta2025\\TarjetaSube\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\joaqu\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\tomim\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -65,7 +65,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305\\RuntimeIdentifierGraph.json"
         }
       }
     }
