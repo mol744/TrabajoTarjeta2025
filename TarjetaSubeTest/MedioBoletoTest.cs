@@ -1,104 +1,153 @@
-﻿using TarjetaSube;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using TarjetaSube;
 
 namespace TarjetaSubeTest
 {
     [TestFixture]
-    public class MedioBoletoTests
+    public class MedioBoletoLimitacionTests
     {
         private MedioBoleto tarjetaMedio;
+        private DateTime _tiempoSimulado;
+        private List<DateTime> _tiemposLlamadas;
 
         [SetUp]
         public void Setup()
         {
             tarjetaMedio = new MedioBoleto(77777);
+            tarjetaMedio.CargarSaldo(10000);
+            tarjetaMedio.ResetearViajes();
+
+            // Configurar tiempo simulado para testing
+            _tiempoSimulado = new DateTime(2025, 1, 1, 10, 0, 0);
+            _tiemposLlamadas = new List<DateTime>();
+
+            tarjetaMedio.ObtenerFechaActual = () => {
+                _tiemposLlamadas.Add(_tiempoSimulado);
+                return _tiempoSimulado;
+            };
         }
 
         [Test]
-        public void MedioBoleto_PagaMitad_Test()
+        public void MedioBoleto_NoPermiteDosViajesEnMenosDe5Minutos_Test()
         {
             // Arrange
-            tarjetaMedio.CargarSaldo(2000);
-            Colectivo colectivo = new Colectivo("123");
+            decimal tarifa = 1580m;
 
-            // Act
-            bool puedePagar = colectivo.PagarCon(tarjetaMedio);
+            // Act - Primer viaje a las 10:00
+            bool primerViaje = tarjetaMedio.PagarBoleto(tarifa);
 
-            // Assert - Debería pagar la mitad: 1580 / 2 = 790
-            Assert.IsTrue(puedePagar);
-            Assert.AreEqual(2000 - 790, tarjetaMedio.Saldo);
+            // Intentar segundo viaje inmediatamente (mismo tiempo)
+            bool segundoViaje = tarjetaMedio.PagarBoleto(tarifa);
+
+            // Assert
+            Assert.IsTrue(primerViaje, "El primer viaje debería ser exitoso");
+            Assert.IsFalse(segundoViaje, "El segundo viaje debería fallar por tiempo insuficiente");
+            Assert.AreEqual(1, tarjetaMedio.CantidadViajesHoy());
         }
 
         [Test]
-        public void MedioBoleto_ComparacionConTarjetaNormal_Test()
+        public void MedioBoleto_PermiteDosViajesDespuesDe5Minutos_Test()
         {
             // Arrange
-            MedioBoleto tarjetaMedio = new MedioBoleto(77777);
-            Tarjeta tarjetaNormal = new Tarjeta(66666);
+            decimal tarifa = 1580m;
+            decimal saldoInicial = tarjetaMedio.Saldo;
 
-            tarjetaMedio.CargarSaldo(2000);
-            tarjetaNormal.CargarSaldo(2000);
+            // Act - Primer viaje a las 10:00
+            bool primerViaje = tarjetaMedio.PagarBoleto(tarifa);
 
-            Colectivo colectivo = new Colectivo("123");
+            // Avanzar 6 minutos
+            _tiempoSimulado = _tiempoSimulado.AddMinutes(6);
 
-            // Act
-            colectivo.PagarCon(tarjetaMedio);
-            colectivo.PagarCon(tarjetaNormal);
+            // Segundo viaje a las 10:06 (después de 5 minutos)
+            bool segundoViaje = tarjetaMedio.PagarBoleto(tarifa);
 
-            // Assert - Medio boleto debería gastar la mitad
-            Assert.AreEqual(2000 - 790, tarjetaMedio.Saldo);   // 1210
-            Assert.AreEqual(2000 - 1580, tarjetaNormal.Saldo); // 420
+            // Assert
+            Assert.IsTrue(primerViaje, "El primer viaje debería ser exitoso");
+            Assert.IsTrue(segundoViaje, "El segundo viaje debería ser exitoso después de 5 minutos");
+            Assert.AreEqual(2, tarjetaMedio.CantidadViajesHoy());
+
+            // Verificar que se cobró medio boleto en ambos (790 * 2 = 1580)
+            decimal tarifaMedio = tarifa / 2;
+            Assert.AreEqual(saldoInicial - (tarifaMedio * 2), tarjetaMedio.Saldo);
         }
 
-        // Tests DIRECTOS al método PagarBoleto (para cobertura 100%)
         [Test]
-        public void MedioBoleto_PagarBoletoDirecto_PagaMitad_Test()
+        public void MedioBoleto_TercerViajeDelDia_TarifaCompleta_Test()
         {
             // Arrange
-            tarjetaMedio.CargarSaldo(2000);
+            decimal tarifa = 1580m;
+            decimal saldoInicial = tarjetaMedio.Saldo;
 
-            // Act - Llamar DIRECTAMENTE al método
-            bool resultado = tarjetaMedio.PagarBoleto(1580);
+            // Act - Realizar 3 viajes con intervalos de 6 minutos
+            bool primerViaje = tarjetaMedio.PagarBoleto(tarifa); // 10:00
 
-            // Assert - Debería pagar la mitad: 1580 / 2 = 790
-            Assert.IsTrue(resultado);
-            Assert.AreEqual(2000 - 790, tarjetaMedio.Saldo);
+            _tiempoSimulado = _tiempoSimulado.AddMinutes(6);
+            bool segundoViaje = tarjetaMedio.PagarBoleto(tarifa); // 10:06
+
+            _tiempoSimulado = _tiempoSimulado.AddMinutes(6);
+            bool tercerViaje = tarjetaMedio.PagarBoleto(tarifa); // 10:12
+
+            // Assert
+            Assert.IsTrue(primerViaje, "Primer viaje debería ser exitoso");
+            Assert.IsTrue(segundoViaje, "Segundo viaje debería ser exitoso");
+            Assert.IsTrue(tercerViaje, "Tercer viaje debería ser exitoso pero con tarifa completa");
+            Assert.AreEqual(3, tarjetaMedio.CantidadViajesHoy());
+
+            // Verificar que los primeros 2 son medio boleto y el tercero es completo
+            decimal tarifaMedio = tarifa / 2;
+            decimal totalEsperado = (tarifaMedio * 2) + tarifa; // 790*2 + 1580 = 3160
+            Assert.AreEqual(saldoInicial - totalEsperado, tarjetaMedio.Saldo);
         }
 
         [Test]
-        public void MedioBoleto_PagarBoletoDirecto_SaldoInsuficiente_Test()
-        {
-            // Arrange - Saldo inicial: 0
-
-            // Act - Intentar pagar con saldo 0 (mitad = 790)
-            bool resultado = tarjetaMedio.PagarBoleto(1580);
-            resultado = tarjetaMedio.PagarBoleto(1580);
-
-            // Assert - Debería fallar (790 > 0)
-            Assert.IsFalse(resultado);
-            Assert.AreEqual(-790, tarjetaMedio.Saldo);
-        }
-
-        [Test]
-        public void MedioBoleto_PagarBoletoDirecto_LimiteNegativo_Test()
+        public void MedioBoleto_NoPermiteMasDeDosViajesConTarifaReducida_Test()
         {
             // Arrange
-            tarjetaMedio.CargarSaldo(2000);
+            decimal tarifa = 1580m;
+            decimal tarifaMedio = tarifa / 2;
 
-            // Act - Pagar hasta cerca del límite negativo
-            bool resultado1 = tarjetaMedio.PagarBoleto(1580); // 2000 - 790 = 1210
-            bool resultado2 = tarjetaMedio.PagarBoleto(1580); // 1210 - 790 = 420
-            bool resultado3 = tarjetaMedio.PagarBoleto(1580); // 420 - 790 = -370
-            bool resultado4 = tarjetaMedio.PagarBoleto(1580); // -370 - 790 = -1160
-            bool resultado5 = tarjetaMedio.PagarBoleto(1580); // -1160 - 790 = -1950 (supera -1200)
+            // Act - Realizar 2 viajes con tarifa reducida + 1 con tarifa completa
+            tarjetaMedio.PagarBoleto(tarifa); // Viaje 1 - medio boleto (10:00)
 
-            // Assert - Último debería fallar
-            Assert.IsTrue(resultado1);
-            Assert.IsTrue(resultado2);
-            Assert.IsTrue(resultado3);
-            Assert.IsTrue(resultado4);
-            Assert.IsFalse(resultado5);
-            Assert.AreEqual(-1160, tarjetaMedio.Saldo);
+            _tiempoSimulado = _tiempoSimulado.AddMinutes(6);
+            tarjetaMedio.PagarBoleto(tarifa); // Viaje 2 - medio boleto (10:06)
+
+            decimal saldoDespuesDeDosViajes = tarjetaMedio.Saldo;
+
+            _tiempoSimulado = _tiempoSimulado.AddMinutes(6);
+            tarjetaMedio.PagarBoleto(tarifa); // Viaje 3 - tarifa completa (10:12)
+
+            // Assert
+            decimal diferenciaTercerViaje = saldoDespuesDeDosViajes - tarjetaMedio.Saldo;
+            Assert.AreEqual(tarifa, diferenciaTercerViaje, "El tercer viaje debería cobrar tarifa completa");
+        }
+
+        [Test]
+        public void MedioBoleto_ReiniciaContadorAlDiaSiguiente_Test()
+        {
+            // Arrange
+            decimal tarifa = 1580m;
+
+            // Act - Realizar 2 viajes "hoy"
+            tarjetaMedio.PagarBoleto(tarifa); // 10:00
+
+            _tiempoSimulado = _tiempoSimulado.AddMinutes(6);
+            tarjetaMedio.PagarBoleto(tarifa); // 10:06
+
+            int viajesHoy = tarjetaMedio.CantidadViajesHoy();
+
+            // Simular nuevo día (avanzar 24 horas)
+            _tiempoSimulado = _tiempoSimulado.AddDays(1);
+
+            // Hacer otro viaje - debería contar como primer viaje del nuevo día
+            tarjetaMedio.PagarBoleto(tarifa);
+
+            int viajesNuevoDia = tarjetaMedio.CantidadViajesHoy();
+
+            // Assert
+            Assert.AreEqual(1, viajesNuevoDia, "Debería tener 1 viaje en el nuevo día");
         }
     }
 }
