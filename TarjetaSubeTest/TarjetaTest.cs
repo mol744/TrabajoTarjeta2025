@@ -14,7 +14,6 @@ namespace TarjetaSubeTest
             tarjeta = new Tarjeta(12345);
         }
 
-        // Tests de carga de saldo
         [Test]
         public void CargaMontoPermitido_2000_Test()
         {
@@ -30,17 +29,16 @@ namespace TarjetaSubeTest
             Assert.IsFalse(resultado);
         }
 
-        // Tests de saldo negativo
         [Test]
         public void PagarConSaldoNegativo_DentroDelLimite_Test()
         {
             tarjeta.CargarSaldo(2000);
             Colectivo colectivo = new Colectivo("123");
 
-            colectivo.PagarCon(tarjeta); // 2000 - 1580 = 420
-            colectivo.PagarCon(tarjeta); // 420 - 1580 = -1160
+            colectivo.PagarCon(tarjeta);
+            colectivo.PagarCon(tarjeta);
 
-            bool puedePagar = colectivo.PagarCon(tarjeta); // -1160 - 1580 = -2740 (supera -1200)
+            bool puedePagar = colectivo.PagarCon(tarjeta);
 
             Assert.IsFalse(puedePagar);
             Assert.AreEqual(-1160, tarjeta.Saldo);
@@ -51,24 +49,26 @@ namespace TarjetaSubeTest
         {
             tarjeta.CargarSaldo(2000);
             Colectivo colectivo = new Colectivo("123");
-            colectivo.PagarCon(tarjeta); // 2000 - 1580 = 420
-            colectivo.PagarCon(tarjeta); // 420 - 1580 = -1160
+            colectivo.PagarCon(tarjeta);
+            colectivo.PagarCon(tarjeta);
 
             bool cargaExitosa = tarjeta.CargarSaldo(2000);
 
             Assert.IsTrue(cargaExitosa);
-            Assert.AreEqual(840, tarjeta.Saldo); // -1160 + 2000 = 840
+            Assert.AreEqual(840, tarjeta.Saldo);
         }
 
-        // Tests de límites
         [Test]
         public void CargarSaldo_SuperaLimiteMaximo_Test()
         {
-            tarjeta.CargarSaldo(30000); // 30000
-            bool resultado = tarjeta.CargarSaldo(15000); // Superaría 40000
+            tarjeta.CargarSaldo(30000);
+            tarjeta.CargarSaldo(30000);
 
-            Assert.IsFalse(resultado);
-            Assert.AreEqual(30000, tarjeta.Saldo);
+            bool resultado = tarjeta.CargarSaldo(10000);
+
+            Assert.IsTrue(resultado);
+            Assert.AreEqual(56000, tarjeta.Saldo);
+            Assert.AreEqual(14000, tarjeta.Acargar);
         }
 
         [Test]
@@ -77,12 +77,66 @@ namespace TarjetaSubeTest
             tarjeta.CargarSaldo(2000);
             Colectivo colectivo = new Colectivo("123");
 
-            colectivo.PagarCon(tarjeta); // 2000 - 1580 = 420
-            colectivo.PagarCon(tarjeta); // 420 - 1580 = -1160
+            colectivo.PagarCon(tarjeta);
+            colectivo.PagarCon(tarjeta);
 
-            bool resultado = colectivo.PagarCon(tarjeta); // -1160 - 1580 = -2740 (supera -1200)
+            bool resultado = colectivo.PagarCon(tarjeta);
 
             Assert.IsFalse(resultado);
+        }
+
+        [Test]
+        public void AcreditarCarga_Completamente_CuandoHayEspacioSuficiente_Test()
+        {
+            tarjeta.CargarSaldo(30000);
+            tarjeta.CargarSaldo(30000);
+            tarjeta.PagarBoleto(10000);
+
+            bool resultado = tarjeta.AcreditarCarga();
+
+            Assert.IsTrue(resultado);
+            Assert.AreEqual(50000, tarjeta.Saldo);
+            Assert.AreEqual(0, tarjeta.Acargar);
+        }
+
+        [Test]
+        public void AcreditarCarga_Parcialmente_CuandoNoHayEspacioSuficiente_Test()
+        {
+            tarjeta.CargarSaldo(30000);
+            tarjeta.CargarSaldo(30000);
+            tarjeta.PagarBoleto(2000);
+
+            bool resultado = tarjeta.AcreditarCarga();
+
+            Assert.IsTrue(resultado);
+            Assert.AreEqual(56000, tarjeta.Saldo);
+            Assert.AreEqual(2000, tarjeta.Acargar);
+        }
+
+        [Test]
+        public void CargarSaldo_ConSaldoPendienteYAcreditar_Test()
+        {
+            tarjeta.CargarSaldo(30000);
+            tarjeta.CargarSaldo(30000);
+
+            bool pagoExitoso = tarjeta.PagarBoleto(5000);
+
+            Assert.IsTrue(pagoExitoso);
+            Assert.AreEqual(55000, tarjeta.Saldo);
+            Assert.AreEqual(0, tarjeta.Acargar);
+        }
+
+        [Test]
+        public void CargarSaldo_MontoNoPermitido_ConSaldoPendiente_Test()
+        {
+            tarjeta.CargarSaldo(30000);
+            tarjeta.CargarSaldo(30000);
+
+            bool resultado = tarjeta.CargarSaldo(100);
+
+            Assert.IsFalse(resultado);
+            Assert.AreEqual(56000, tarjeta.Saldo);
+            Assert.AreEqual(4000, tarjeta.Acargar);
         }
     }
 }
