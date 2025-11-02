@@ -37,6 +37,13 @@ namespace TarjetaSubeTest
         }
 
         [Test]
+        public void BoletoGratuito_ObtenerTarifa_Test()
+        {
+            // Act & Assert
+            Assert.AreEqual(0, tarjetaGratuita.ObtenerTarifa(1580m));
+        }
+
+        [Test]
         public void BoletoGratuito_ConsultarSaldoYID_Test()
         {
             // Arrange

@@ -36,6 +36,13 @@ namespace TarjetaSubeTest
         }
 
         [Test]
+        public void ObtenerTarifa_FranquiciaCompleta_Test()
+        {
+            // Act & Assert
+            Assert.AreEqual(0, tarjetaFranquicia.ObtenerTarifa(1580m));
+        }
+
+        [Test]
         public void FranquiciaCompleta_ConsultarSaldoYID_Test()
         {
             tarjetaFranquicia.CargarSaldo(3000); 
