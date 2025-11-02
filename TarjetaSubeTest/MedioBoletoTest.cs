@@ -24,6 +24,7 @@ namespace TarjetaSubeTest
 
             Assert.IsTrue(puedePagar);
             Assert.AreEqual(2000 - 790, tarjetaMedio.Saldo);
+            Assert.AreEqual(1580/2, tarjetaMedio.ObtenerTarifa(1580m));
         }
 
         [Test]

@@ -8,13 +8,18 @@ namespace TarjetaSube
         {
         }
 
-        public new bool PagarBoleto(decimal tarifa)
+        public override bool PagarBoleto(decimal tarifa)
         {
             // No restamos saldo - el viaje es gratuito
             Console.WriteLine($"Viaje gratuito con Franquicia Completa. Saldo: ${Saldo}");
             return true;
         }
-        public virtual string ObtenerTipoTarjeta()
+
+        public new decimal ObtenerTarifa(decimal tarifa)
+        {
+            return 0m;
+        }
+        public override string ObtenerTipoTarjeta()
         {
             return "FranquiciaCompleta";
         }

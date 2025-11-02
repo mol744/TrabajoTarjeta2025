@@ -8,12 +8,16 @@ namespace TarjetaSube
         {
         }
 
-        public new bool PagarBoleto(decimal tarifa)
+        public override bool PagarBoleto(decimal tarifa)
         {
             decimal tarifaMedio = tarifa / 2;
             return base.PagarBoleto(tarifaMedio);
         }
-        public virtual string ObtenerTipoTarjeta()
+        public new decimal ObtenerTarifa(decimal tarifa)
+        {
+            return tarifa / 2;
+        }
+        public override string ObtenerTipoTarjeta()
         {
             return "MedioBoleto";
         }

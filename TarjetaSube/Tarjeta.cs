@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TarjetaSube
 {
-    public class Tarjeta
+    public abstract class Tarjeta
     {
         public int Numero { get; private set; }
         public decimal Saldo { get; set; }
@@ -39,7 +39,7 @@ namespace TarjetaSube
             return true;
         }
 
-        public bool PagarBoleto(decimal tarifa)
+        public virtual bool PagarBoleto(decimal tarifa)
         {
             if (Saldo - tarifa < SALDO_MINIMO)
             {
@@ -63,10 +63,12 @@ namespace TarjetaSube
             return true;
         }
 
-        public virtual string ObtenerTipoTarjeta()
+        public virtual decimal ObtenerTarifa(decimal tarifa)
         {
-            return "Tarjeta Común";
+            return tarifa;
         }
+
+        public abstract string ObtenerTipoTarjeta();
 
         public decimal ConsultarSaldo()
         {

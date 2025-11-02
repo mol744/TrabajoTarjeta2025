@@ -20,7 +20,6 @@ C:\Users\joaqu\Documents\Joaquin\IPS\6TO\Adapt. amb. de Trabajo\repos\Dupla TJ\T
 C:\Users\joaqu\Documents\Joaquin\IPS\6TO\Adapt. amb. de Trabajo\repos\Dupla TJ\TP_Tarjeta\TarjetaSube\bin\Debug\net5.0\TarjetaSube.runtimeconfig.dev.json
 C:\Users\joaqu\Documents\Joaquin\IPS\6TO\Adapt. amb. de Trabajo\repos\Dupla TJ\TP_Tarjeta\TarjetaSube\bin\Debug\net5.0\TarjetaSube.dll
 C:\Users\joaqu\Documents\Joaquin\IPS\6TO\Adapt. amb. de Trabajo\repos\Dupla TJ\TP_Tarjeta\TarjetaSube\bin\Debug\net5.0\TarjetaSube.pdb
-C:\Users\joaqu\Documents\Joaquin\IPS\6TO\Adapt. amb. de Trabajo\repos\Dupla TJ\TP_Tarjeta\TarjetaSube\obj\Debug\net5.0\TarjetaSube.csproj.AssemblyReference.cache
 C:\Users\joaqu\Documents\Joaquin\IPS\6TO\Adapt. amb. de Trabajo\repos\Dupla TJ\TP_Tarjeta\TarjetaSube\obj\Debug\net5.0\TarjetaSube.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\joaqu\Documents\Joaquin\IPS\6TO\Adapt. amb. de Trabajo\repos\Dupla TJ\TP_Tarjeta\TarjetaSube\obj\Debug\net5.0\TarjetaSube.AssemblyInfoInputs.cache
 C:\Users\joaqu\Documents\Joaquin\IPS\6TO\Adapt. amb. de Trabajo\repos\Dupla TJ\TP_Tarjeta\TarjetaSube\obj\Debug\net5.0\TarjetaSube.AssemblyInfo.cs
