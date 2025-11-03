@@ -31,8 +31,8 @@ namespace TarjetaSubeTest
 
             bool puedePagar = colectivo.PagarCon(tarjeta);
 
-            Assert.IsTrue(puedePagar);
-            Assert.AreEqual(-1200, tarjeta.Saldo);
+            Assert.IsFalse(puedePagar);
+            Assert.AreEqual(0, tarjeta.Saldo);
         }
 
         [Test]

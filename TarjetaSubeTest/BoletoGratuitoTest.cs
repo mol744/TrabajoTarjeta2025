@@ -49,11 +49,17 @@ namespace TarjetaSubeTest
             // Arrange
             tarjetaGratuita.CargarSaldo(2000);
 
-
-
             // Act & Assert
             Assert.AreEqual(2000, tarjetaGratuita.ConsultarSaldo());
             Assert.AreEqual(55555, tarjetaGratuita.ConsultarID());
+        }
+
+        [Test]
+        public void BoletoGratuito_PagarBoletoDirecto_SiemprePermitePago_Test()
+        {
+            // Arrange
+            tarjetaGratuita.CargarSaldo(2000);
+
             // Act - Llamar DIRECTAMENTE al método
             bool resultado = tarjetaGratuita.PagarBoleto(1580);
 
@@ -65,6 +71,9 @@ namespace TarjetaSubeTest
         [Test]
         public void BoletoGratuito_PagarBoletoDirecto_MultiplesVeces_Test()
         {
+            // Resetear viajes para asegurar estado limpio
+            tarjetaGratuita.ResetearViajes();
+
             // Arrange
             tarjetaGratuita.CargarSaldo(5000); // Más saldo para cubrir viajes adicionales
 
@@ -90,10 +99,6 @@ namespace TarjetaSubeTest
             // Assert - Debería permitir el pago (gratuito)
             Assert.IsTrue(resultado);
             Assert.AreEqual(0, tarjetaGratuita.Saldo);
-
-
-            Assert.AreEqual(2000, tarjetaGratuita.ConsultarSaldo());
-            Assert.AreEqual(55555, tarjetaGratuita.ConsultarID());
         }
     }
 }

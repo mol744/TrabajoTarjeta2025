@@ -20,11 +20,6 @@ namespace TarjetaSube
 
         public override bool PagarBoleto(decimal tarifa)
         {
-
-            decimal tarifaMedio = tarifa / 2;
-            return base.PagarBoleto(tarifaMedio);
-
-            if (Saldo - tarifa < SALDO_MINIMO)
             DateTime ahora = ObtenerFechaActual();
             decimal tarifaAPagar = tarifa;
 
@@ -62,14 +57,7 @@ namespace TarjetaSube
             string tipoViaje = _viajesDelDia.Count <= 2 ? "Medio Boleto" : "Tarifa Completa";
             Console.WriteLine($"Pago realizado con {tipoViaje}. Tarifa: ${tarifaAPagar}. Nuevo saldo: ${Saldo}. Viajes hoy: {_viajesDelDia.Count}");
 
-            Saldo -= tarifa;
-            Console.WriteLine($"Pago realizado con Medio Boleto. Tarifa: ${tarifa}. Nuevo saldo: ${Saldo}");
             return true;
-
-        }
-        public new decimal ObtenerTarifa(decimal tarifa)
-        {
-            return tarifa / 2;
         }
 
         private void LimpiarViajesAntiguos(DateTime fechaActual)

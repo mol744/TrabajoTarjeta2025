@@ -49,27 +49,16 @@ namespace TarjetaSube
         {
             if (Saldo - tarifa < SALDO_MINIMO)
             {
-                decimal maximoPagoPosible = Saldo - SALDO_MINIMO;
-                    Console.WriteLine("Saldo insuficiente. Límite negativo alcanzado.");
-                    return false;
-            
-
-                if (maximoPagoPosible > 0)
-                {
-                    Saldo -= maximoPagoPosible;
-                    Console.WriteLine($"Pago PARCIAL realizado. Se pagó: ${maximoPagoPosible} de ${tarifa}. Nuevo saldo: ${Saldo}");
-                    return true;
-                }
-                else
-                {
-                    Console.WriteLine("Saldo insuficiente. Límite negativo alcanzado.");
-                    return false;
-                }
+                Console.WriteLine("Saldo insuficiente.");
+                return false;
             }
             Saldo -= tarifa;
-            Console.WriteLine($"Pago COMPLETO realizado. Tarifa: ${tarifa}. Nuevo saldo: ${Saldo}");
+            if (Acargar > 0)
+            {
+                AcreditarCarga();
+            }
+            Console.WriteLine($"Pago realizado. Nuevo saldo: ${Saldo}");
             return true;
-            
         }
 
         public virtual decimal ObtenerTarifa(decimal tarifa)
@@ -88,12 +77,6 @@ namespace TarjetaSube
         public int ConsultarID()
         {
             return Numero;
-            if (Acargar > 0)
-            {
-                AcreditarCarga();
-            }
-            Console.WriteLine($"Pago realizado. Nuevo saldo: ${Saldo}");
-            return true;
         }
 
         public bool AcreditarCarga()
@@ -112,27 +95,7 @@ namespace TarjetaSube
             Console.WriteLine($"Saldo máximo alcanzado: ${SALDO_MAXIMO} , Saldo pendiente: ${Acargar} ");
             Saldo = SALDO_MAXIMO;
             return true;
-            
-            Console.WriteLine($"Pago COMPLETO realizado. Tarifa: ${tarifa}. Nuevo saldo: ${Saldo}");
-            return true;
-        }
 
-        public virtual decimal ObtenerTarifa(decimal tarifa)
-        {
-            return tarifa;
-        }
-
-        public abstract string ObtenerTipoTarjeta();
-
-        public decimal ConsultarSaldo()
-        {
-            return Saldo;
-        }
-
-
-        public int ConsultarID()
-        {
-            return Numero;
         }
     }
 }   
