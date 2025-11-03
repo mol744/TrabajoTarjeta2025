@@ -7,7 +7,7 @@ namespace TarjetaSube
         public FranquiciaCompleta(int numero) : base(numero)
         {
         }
-        
+
 
         public override bool PagarBoleto(decimal tarifa)
         {
