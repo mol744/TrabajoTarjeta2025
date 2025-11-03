@@ -50,6 +50,8 @@ namespace TarjetaSubeTest
         [Test]
         public void MedioBoleto_SaldoInsuficiente()
         {
+            tarjetaMedio.ResetearSaldo();
+
             // Arrange
             decimal tarifa = 1580m;
 

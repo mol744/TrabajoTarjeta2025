@@ -73,6 +73,10 @@ namespace TarjetaSube
             return Saldo;
         }
 
+        public void ResetearSaldo() // Para testing
+        {
+            Saldo = 0;
+        }
 
         public int ConsultarID()
         {
