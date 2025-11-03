@@ -7,6 +7,15 @@ namespace TarjetaSubeTest
     public class ColectivoTests
     {
         [Test]
+        public void ObtenerTarifaBasicaDeLaLinea_Test()
+        {
+            Colectivo colectivo = new Colectivo("123");
+            
+            Assert.AreEqual("TarjetaNormal", Colectivo.TARIFA_BASICA);
+        }
+
+
+        [Test]
         public void PagarViajeConSaldoSuficiente_Test()
         {
             // Arrange

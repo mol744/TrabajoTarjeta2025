@@ -138,5 +138,11 @@ namespace TarjetaSubeTest
             Assert.AreEqual(56000, tarjeta.Saldo);
             Assert.AreEqual(4000, tarjeta.Acargar);
         }
+
+        [Test]
+        public void ObtenerTipoTarjeta_Test()
+        {
+            Assert.AreEqual("TarjetaNormal", tarjeta.ObtenerTipoTarjeta());
+        }
     }
 }

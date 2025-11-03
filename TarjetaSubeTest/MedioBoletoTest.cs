@@ -48,6 +48,23 @@ namespace TarjetaSubeTest
         }
 
         [Test]
+        public void MedioBoleto_SaldoInsuficiente()
+        {
+            // Arrange
+            decimal tarifa = 1580m;
+
+            bool primerViaje = tarjetaMedio.PagarBoleto(tarifa); // 10:00
+            _tiempoSimulado = _tiempoSimulado.AddMinutes(6);
+
+            bool segundoViaje = tarjetaMedio.PagarBoleto(tarifa); // 10:06
+
+            // Assert
+            Assert.IsFalse(segundoViaje, "El segundo viaje debería fallar por saldo insuficiente");
+
+        }
+
+
+        [Test]
         public void MedioBoleto_PermiteDosViajesDespuesDe5Minutos_Test()
         {
             // Arrange
