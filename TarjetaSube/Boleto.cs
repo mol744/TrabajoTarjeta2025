@@ -33,13 +33,5 @@ namespace TarjetaSube
         {
             return Tarifa;
         }
-
-        public void InformarMontoConSaldoNegativo(decimal tarifaNormal)
-        {
-            if (Tarifa > tarifaNormal) 
-            {
-                Console.WriteLine($"ATENCIÓN: Monto final abonado (${Tarifa}) superior a tarifa normal (${tarifaNormal}) debido a saldo negativo.");
-            }
-        }
     }
 }

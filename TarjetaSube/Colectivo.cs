@@ -5,7 +5,7 @@ namespace TarjetaSube
     public class Colectivo
     {
         public string Linea { get; private set; }
-        public const decimal TARIFA_BASICA = 1580m;
+        public static decimal TARIFA_BASICA => 1580m;
 
         public Colectivo(string linea)
         {

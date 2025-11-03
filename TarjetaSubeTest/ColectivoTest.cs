@@ -11,7 +11,7 @@ namespace TarjetaSubeTest
         {
             Colectivo colectivo = new Colectivo("123");
             
-            Assert.AreEqual("TarjetaNormal", Colectivo.TARIFA_BASICA);
+            Assert.AreEqual(1580m, Colectivo.TARIFA_BASICA);
         }
 
 
@@ -78,6 +78,13 @@ namespace TarjetaSubeTest
 
             // Act & Assert
             Assert.AreEqual("123", colectivo.ObtenerLinea());
+        }
+
+        [Test]
+        public void Colectivo_TARIFA_BASICA_DeberiaSer1580()
+        {
+            // Act & Assert
+            Assert.AreEqual(1580m, Colectivo.TARIFA_BASICA);
         }
     }
 }

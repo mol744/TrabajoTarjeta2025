@@ -41,14 +41,5 @@ namespace TarjetaSubeTest
             Assert.AreEqual(1580, boleto.ObtenerTotalAbonado());
         }
 
-        [Test]
-        public void Boleto_InformarMontoConSaldoNegativo_NoLanzaExcepcion_Test()
-        {
-            // Arrange
-            Boleto boleto = new Boleto(2000, "12345", "153", -500);
-
-            // Act & Assert - Verificar que no lance excepción
-            Assert.DoesNotThrow(() => boleto.InformarMontoConSaldoNegativo(1580));
-        }
     }
 }
