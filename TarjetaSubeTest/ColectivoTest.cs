@@ -25,6 +25,7 @@ namespace TarjetaSubeTest
         [Test]
         public void PagarViajeSinSaldoSuficiente_Test()
         {
+
             Tarjeta tarjeta = new TarjetaNormal(22222);
             Colectivo colectivo = new Colectivo("123");
 

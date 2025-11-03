@@ -47,6 +47,8 @@ namespace TarjetaSubeTest
         {
             tarjetaFranquicia.CargarSaldo(3000); 
 
+            tarjetaFranquicia.CargarSaldo(3000);
+
             // Act & Assert
             Assert.AreEqual(3000, tarjetaFranquicia.ConsultarSaldo());
             Assert.AreEqual(99999, tarjetaFranquicia.ConsultarID());

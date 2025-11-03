@@ -8,6 +8,7 @@ namespace TarjetaSube
         {
         }
         
+
         public override bool PagarBoleto(decimal tarifa)
         {
             // No restamos saldo - el viaje es gratuito

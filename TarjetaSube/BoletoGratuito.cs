@@ -57,6 +57,7 @@ namespace TarjetaSube
             _viajesDelDia.Clear();
         }
 
+
         public new decimal ObtenerTarifa(decimal tarifa)
         {
             return 0m;

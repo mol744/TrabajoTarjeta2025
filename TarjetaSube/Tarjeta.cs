@@ -50,6 +50,9 @@ namespace TarjetaSube
             if (Saldo - tarifa < SALDO_MINIMO)
             {
                 decimal maximoPagoPosible = Saldo - SALDO_MINIMO;
+                    Console.WriteLine("Saldo insuficiente. Límite negativo alcanzado.");
+                    return false;
+            
 
                 if (maximoPagoPosible > 0)
                 {
@@ -64,9 +67,9 @@ namespace TarjetaSube
                 }
             }
             Saldo -= tarifa;
-<<<<<<< HEAD
             Console.WriteLine($"Pago COMPLETO realizado. Tarifa: ${tarifa}. Nuevo saldo: ${Saldo}");
             return true;
+            
         }
 
         public virtual decimal ObtenerTarifa(decimal tarifa)
@@ -85,7 +88,6 @@ namespace TarjetaSube
         public int ConsultarID()
         {
             return Numero;
-=======
             if (Acargar > 0)
             {
                 AcreditarCarga();
@@ -111,7 +113,27 @@ namespace TarjetaSube
             Saldo = SALDO_MAXIMO;
             return true;
             
->>>>>>> origin/acreditacion_saldo
+            Console.WriteLine($"Pago COMPLETO realizado. Tarifa: ${tarifa}. Nuevo saldo: ${Saldo}");
+            return true;
+        }
+
+        public virtual decimal ObtenerTarifa(decimal tarifa)
+        {
+            return tarifa;
+        }
+
+        public abstract string ObtenerTipoTarjeta();
+
+        public decimal ConsultarSaldo()
+        {
+            return Saldo;
+        }
+
+
+        public int ConsultarID()
+        {
+            return Numero;
         }
     }
-}
+}   
+

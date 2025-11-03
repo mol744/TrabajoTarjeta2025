@@ -50,6 +50,7 @@ namespace TarjetaSubeTest
             tarjetaGratuita.CargarSaldo(2000);
 
 
+
             // Act & Assert
             Assert.AreEqual(2000, tarjetaGratuita.ConsultarSaldo());
             Assert.AreEqual(55555, tarjetaGratuita.ConsultarID());
@@ -90,6 +91,9 @@ namespace TarjetaSubeTest
             Assert.IsTrue(resultado);
             Assert.AreEqual(0, tarjetaGratuita.Saldo);
 
+
+            Assert.AreEqual(2000, tarjetaGratuita.ConsultarSaldo());
+            Assert.AreEqual(55555, tarjetaGratuita.ConsultarID());
         }
     }
 }
