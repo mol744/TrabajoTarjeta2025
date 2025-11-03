@@ -15,7 +15,6 @@ namespace TarjetaSube
         public bool PagarCon(Tarjeta tarjeta)
         {
             decimal tarifaAPagar = TARIFA_BASICA;
-
             bool pagoExitoso = tarjeta.PagarBoleto(tarifaAPagar);
 
             if (pagoExitoso)

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-
-
 namespace TarjetaSube
 {
     [ExcludeFromCodeCoverage]
