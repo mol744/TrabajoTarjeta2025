@@ -93,12 +93,6 @@ namespace TarjetaSube
             }
         }
 
-        public void SimularPasoTiempo(TimeSpan tiempo)
-        {
-            // Avanzar el tiempo simulado
-            _tiempoSimulado = _tiempoSimulado.Add(tiempo);
-        }
-
         public override string ObtenerTipoTarjeta()
         {
             return "MedioBoleto";

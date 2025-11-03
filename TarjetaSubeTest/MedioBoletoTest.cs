@@ -23,7 +23,8 @@ namespace TarjetaSubeTest
             _tiempoSimulado = new DateTime(2025, 1, 1, 10, 0, 0);
             _tiemposLlamadas = new List<DateTime>();
 
-            tarjetaMedio.ObtenerFechaActual = () => {
+            tarjetaMedio.ObtenerFechaActual = () =>
+            {
                 _tiemposLlamadas.Add(_tiempoSimulado);
                 return _tiempoSimulado;
             };
@@ -223,6 +224,13 @@ namespace TarjetaSubeTest
             TimeSpan? tiempo = tarjetaMedio.TiempoDesdeUltimoViaje();
             Assert.IsNotNull(tiempo);
             Assert.AreEqual(3, tiempo.Value.TotalMinutes, 0.1);
+        }
+
+        [Test]
+        public void MedioBoleto_ObtenerTipoTarjeta_Test()
+        {
+            // Act & Assert
+            Assert.AreEqual("MedioBoleto", tarjetaMedio.ObtenerTipoTarjeta());
         }
     }
 }
