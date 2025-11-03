@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 
 namespace TarjetaSube
 {
@@ -7,7 +8,8 @@ namespace TarjetaSube
     {
         public int Numero { get; private set; }
         public decimal Saldo { get; set; }
-        public const decimal SALDO_MAXIMO = 40000m;
+        public decimal Acargar { get; set; }
+        public const decimal SALDO_MAXIMO = 56000m;
         public const decimal SALDO_MINIMO = -1200m;
         private static readonly List<int> MONTOS_PERMITIDOS = new List<int>
             { 2000, 3000, 4000, 5000, 8000, 10000, 15000, 20000, 25000, 30000 };
@@ -16,6 +18,7 @@ namespace TarjetaSube
         {
             Numero = numero;
             Saldo = 0;
+            Acargar = 0;
         }
 
         public bool CargarSaldo(int montoACargar)
@@ -30,8 +33,11 @@ namespace TarjetaSube
 
             if (nuevoSaldo > SALDO_MAXIMO)
             {
-                Console.WriteLine($"No se puede cargar. Saldo máximo: ${SALDO_MAXIMO}");
-                return false;
+                decimal pendiente = nuevoSaldo - SALDO_MAXIMO;
+                Acargar += pendiente;
+                Console.WriteLine($"Saldo máximo alcanzado: ${SALDO_MAXIMO} , Saldo pendiente: ${Acargar} ");
+                Saldo = SALDO_MAXIMO;
+                return true;
             }
 
             Saldo = nuevoSaldo;
@@ -57,8 +63,8 @@ namespace TarjetaSube
                     return false;
                 }
             }
-
             Saldo -= tarifa;
+<<<<<<< HEAD
             Console.WriteLine($"Pago COMPLETO realizado. Tarifa: ${tarifa}. Nuevo saldo: ${Saldo}");
             return true;
         }
@@ -79,6 +85,33 @@ namespace TarjetaSube
         public int ConsultarID()
         {
             return Numero;
+=======
+            if (Acargar > 0)
+            {
+                AcreditarCarga();
+            }
+            Console.WriteLine($"Pago realizado. Nuevo saldo: ${Saldo}");
+            return true;
+        }
+
+        public bool AcreditarCarga()
+        {
+            decimal espacioDisponible = SALDO_MAXIMO - Saldo;
+            if (espacioDisponible >= Acargar)
+            {
+                Saldo += Acargar;
+                Acargar = 0;
+                Console.WriteLine($"Carga acreditada. Nuevo saldo: ${Saldo}");
+                return true;
+            }
+            decimal nuevoSaldo = Saldo + Acargar;
+            decimal pendiente = nuevoSaldo - SALDO_MAXIMO;
+            Acargar = pendiente;
+            Console.WriteLine($"Saldo máximo alcanzado: ${SALDO_MAXIMO} , Saldo pendiente: ${Acargar} ");
+            Saldo = SALDO_MAXIMO;
+            return true;
+            
+>>>>>>> origin/acreditacion_saldo
         }
     }
 }
