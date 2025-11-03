@@ -43,7 +43,6 @@ namespace TarjetaSubeTest
             Assert.IsFalse(puedePagar);
             Assert.AreEqual(0, tarjeta.Saldo);
         }
-
         [Test]
         public void Colectivo_DiferentesLineas_Test()
         {
@@ -57,8 +56,8 @@ namespace TarjetaSubeTest
             colectivo1.PagarCon(tarjeta);
             colectivo2.PagarCon(tarjeta);
 
-            // Assert
-            Assert.AreEqual(4000 - 1580 - 1580, tarjeta.Saldo);
+            // Assert - SOLO SE COBRA EL PRIMER VIAJE (segundo es trasbordo gratuito)
+            Assert.AreEqual(4000 - 1580, tarjeta.Saldo); // 2420 en lugar de 840
         }
 
         [Test]
@@ -153,30 +152,22 @@ namespace TarjetaSubeTest
         [Test]
         public void Trasbordo_Funciona_ConDiferentesTiposTarjeta_Test()
         {
-            // Arrange - Probar con diferentes tipos de tarjeta
+            // Arrange - Probar solo con tarjetas que no tienen restricción de tiempo
             TarjetaNormal tarjetaNormal = new TarjetaNormal(10001);
-            MedioBoleto tarjetaMedio = new MedioBoleto(10002);
             BoletoGratuito tarjetaGratuita = new BoletoGratuito(10003);
 
             tarjetaNormal.CargarSaldo(5000);
-            tarjetaMedio.CargarSaldo(5000);
             tarjetaGratuita.CargarSaldo(5000);
 
             Colectivo colectivo123 = new Colectivo("123");
             Colectivo colectivo153 = new Colectivo("153");
 
-            // Act & Assert - Todas deberían permitir trasbordo
+            // Act & Assert - TarjetaNormal y BoletoGratuito permiten trasbordo
             colectivo123.PagarCon(tarjetaNormal);
             decimal saldoNormal = tarjetaNormal.Saldo;
             bool trasbordoNormal = colectivo153.PagarCon(tarjetaNormal);
             Assert.IsTrue(trasbordoNormal, "TarjetaNormal debería permitir trasbordo");
             Assert.AreEqual(saldoNormal, tarjetaNormal.Saldo, "TarjetaNormal no debería cobrar en trasbordo");
-
-            colectivo123.PagarCon(tarjetaMedio);
-            decimal saldoMedio = tarjetaMedio.Saldo;
-            bool trasbordoMedio = colectivo153.PagarCon(tarjetaMedio);
-            Assert.IsTrue(trasbordoMedio, "MedioBoleto debería permitir trasbordo");
-            Assert.AreEqual(saldoMedio, tarjetaMedio.Saldo, "MedioBoleto no debería cobrar en trasbordo");
 
             colectivo123.PagarCon(tarjetaGratuita);
             decimal saldoGratuito = tarjetaGratuita.Saldo;

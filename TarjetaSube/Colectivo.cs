@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace TarjetaSube
 {
@@ -6,7 +7,7 @@ namespace TarjetaSube
     {
         public string Linea { get; private set; }
         public static decimal TARIFA_BASICA => 1580m;
-        private static Dictionary<int, (DateTime, string)> _ultimosViajes = new Dictionary<int, DateTime, string>();
+        private static Dictionary<int, (DateTime, string)> _ultimosViajes = new Dictionary<int, (DateTime, string)>();
 
         public Colectivo(string linea)
         {
@@ -22,8 +23,8 @@ namespace TarjetaSube
                 var (fecha, lineaAnterior) = _ultimosViajes[tarjeta.Numero];
                 if ((DateTime.Now - fecha).TotalMinutes <= 60 && lineaAnterior != this.Linea)
                 {
-                    tarifaAPagar = 0; // 🎉 Trasbordo gratis
-                    Console.WriteLine("🎉 TRASBORDO GRATUITO");
+                    tarifaAPagar = 0; 
+                    Console.WriteLine("TRASBORDO GRATUITO");
                 }
             }
 
