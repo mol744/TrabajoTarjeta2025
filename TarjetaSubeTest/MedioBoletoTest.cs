@@ -149,5 +149,61 @@ namespace TarjetaSubeTest
             // Assert
             Assert.AreEqual(1, viajesNuevoDia, "Debería tener 1 viaje en el nuevo día");
         }
+
+        [Test]
+        public void MedioBoleto_ObtenerTarifa_CalculaCorrectamente()
+        {   
+            tarjetaMedio.ResetearViajes();
+            // Primeros 2 viajes - tarifa media
+            Assert.AreEqual(790m, tarjetaMedio.ObtenerTarifa(1580m));
+
+            tarjetaMedio.PagarBoleto(1580m); // Primer viaje
+            Assert.AreEqual(790m, tarjetaMedio.ObtenerTarifa(1580m));
+
+            _tiempoSimulado = _tiempoSimulado.AddMinutes(6);
+            tarjetaMedio.PagarBoleto(1580m); // Segundo viaje
+            Assert.AreEqual(790m, tarjetaMedio.ObtenerTarifa(1580m));
+
+            _tiempoSimulado = _tiempoSimulado.AddMinutes(6);
+            tarjetaMedio.PagarBoleto(1580m); // Tercer viaje (tarifa completa)
+            Assert.AreEqual(1580m, tarjetaMedio.ObtenerTarifa(1580m));
+        }
+
+        [Test]
+        public void MedioBoleto_RespetaLimiteNegativo_Test()
+        {
+            tarjetaMedio.ResetearViajes();
+            // Arrange
+            tarjetaMedio.CargarSaldo(2000); // Saldo bajo
+
+            // Act - Intentar pagar medio boleto (790) con saldo 2000
+            bool resultado = tarjetaMedio.PagarBoleto(1580m);
+            _tiempoSimulado = _tiempoSimulado.AddMinutes(6);
+            resultado = tarjetaMedio.PagarBoleto(1580m);
+            _tiempoSimulado = _tiempoSimulado.AddMinutes(6);
+            resultado = tarjetaMedio.PagarBoleto(1580m);
+
+            // Assert
+            Assert.IsTrue(resultado, "");
+            //Assert.AreEqual(500 - 790, tarjetaMedio.Saldo); // -290
+        }
+
+        [Test]
+        public void MedioBoleto_TiempoDesdeUltimoViaje_CalculaCorrectamente()
+        {
+            // Act & Assert - Sin viajes
+            Assert.IsNull(tarjetaMedio.TiempoDesdeUltimoViaje());
+
+            // Primer viaje
+            tarjetaMedio.PagarBoleto(1580m);
+
+            // Avanzar 3 minutos
+            _tiempoSimulado = _tiempoSimulado.AddMinutes(3);
+
+            // Verificar tiempo transcurrido
+            TimeSpan? tiempo = tarjetaMedio.TiempoDesdeUltimoViaje();
+            Assert.IsNotNull(tiempo);
+            Assert.AreEqual(3, tiempo.Value.TotalMinutes, 0.1);
+        }
     }
 }

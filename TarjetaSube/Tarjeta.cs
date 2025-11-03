@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace TarjetaSube
 {
-    public class Tarjeta
+    public abstract class Tarjeta
     {
         public int Numero { get; private set; }
         public decimal Saldo { get; set; }
@@ -39,17 +39,35 @@ namespace TarjetaSube
             return true;
         }
 
-        public bool PagarBoleto(decimal tarifa)
+        public virtual bool PagarBoleto(decimal tarifa)
         {
             if (Saldo - tarifa < SALDO_MINIMO)
             {
-                Console.WriteLine("Saldo insuficiente.");
-                return false;
+                    Console.WriteLine("Saldo insuficiente. Límite negativo alcanzado.");
+                    return false;
             }
 
             Saldo -= tarifa;
-            Console.WriteLine($"Pago realizado. Nuevo saldo: ${Saldo}");
+            Console.WriteLine($"Pago COMPLETO realizado. Tarifa: ${tarifa}. Nuevo saldo: ${Saldo}");
             return true;
+        }
+
+        public virtual decimal ObtenerTarifa(decimal tarifa)
+        {
+            return tarifa;
+        }
+
+        public abstract string ObtenerTipoTarjeta();
+
+        public decimal ConsultarSaldo()
+        {
+            return Saldo;
+        }
+
+
+        public int ConsultarID()
+        {
+            return Numero;
         }
     }
 }

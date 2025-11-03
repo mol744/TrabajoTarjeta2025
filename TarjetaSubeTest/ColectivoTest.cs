@@ -10,7 +10,7 @@ namespace TarjetaSubeTest
         public void PagarViajeConSaldoSuficiente_Test()
         {
             // Arrange
-            Tarjeta tarjeta = new Tarjeta(11111);
+            Tarjeta tarjeta = new TarjetaNormal(11111);
             tarjeta.CargarSaldo(2000);
             Colectivo colectivo = new Colectivo("123");
 
@@ -26,7 +26,7 @@ namespace TarjetaSubeTest
         public void PagarViajeSinSaldoSuficiente_Test()
         {
             // Arrange
-            Tarjeta tarjeta = new Tarjeta(22222);
+            Tarjeta tarjeta = new TarjetaNormal(22222);
             Colectivo colectivo = new Colectivo("123");
 
             // Act
@@ -41,7 +41,7 @@ namespace TarjetaSubeTest
         public void Colectivo_DiferentesLineas_Test()
         {
             // Arrange
-            Tarjeta tarjeta = new Tarjeta(33333);
+            Tarjeta tarjeta = new TarjetaNormal(33333);
             tarjeta.CargarSaldo(4000);
             Colectivo colectivo1 = new Colectivo("123");
             Colectivo colectivo2 = new Colectivo("153");

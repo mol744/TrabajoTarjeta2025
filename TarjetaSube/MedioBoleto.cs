@@ -8,6 +8,7 @@ namespace TarjetaSube
     {
         private List<DateTime> _viajesDelDia;
         private DateTime? _ultimoViaje;
+        private DateTime _tiempoSimulado;
 
         public Func<DateTime> ObtenerFechaActual { get; set; } = () => DateTime.Now;
 
@@ -17,7 +18,7 @@ namespace TarjetaSube
             _ultimoViaje = null;
         }
 
-        public new bool PagarBoleto(decimal tarifa)
+        public override bool PagarBoleto(decimal tarifa)
         {
             DateTime ahora = ObtenerFechaActual();
             decimal tarifaAPagar = tarifa;
@@ -82,8 +83,25 @@ namespace TarjetaSube
             _ultimoViaje = null;
         }
 
+        public override decimal ObtenerTarifa(decimal tarifa)
+        {   
+            if (_viajesDelDia.Count > 2) { 
+                return tarifa;
+            } else
+            {
+                return tarifa / 2;
+            }
+        }
+
         public void SimularPasoTiempo(TimeSpan tiempo)
         {
+            // Avanzar el tiempo simulado
+            _tiempoSimulado = _tiempoSimulado.Add(tiempo);
+        }
+
+        public override string ObtenerTipoTarjeta()
+        {
+            return "MedioBoleto";
         }
     }
 }

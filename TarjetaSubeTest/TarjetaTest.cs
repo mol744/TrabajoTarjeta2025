@@ -11,7 +11,7 @@ namespace TarjetaSubeTest
         [SetUp]
         public void Setup()
         {
-            tarjeta = new Tarjeta(12345);
+            tarjeta = new TarjetaNormal(12345);
         }
 
         // Tests de carga de saldo

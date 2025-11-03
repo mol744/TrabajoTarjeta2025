@@ -14,23 +14,13 @@ namespace TarjetaSube
 
         public bool PagarCon(Tarjeta tarjeta)
         {
-            
             decimal tarifaAPagar = TARIFA_BASICA;
-
-            if (tarjeta is FranquiciaCompleta || tarjeta is BoletoGratuito)
-            {
-                tarifaAPagar = 0;
-            }
-            else if (tarjeta is MedioBoleto)
-            {
-                tarifaAPagar = TARIFA_BASICA / 2; // Mitad de tarifa
-            }
 
             bool pagoExitoso = tarjeta.PagarBoleto(tarifaAPagar);
 
             if (pagoExitoso)
             {
-                Boleto boleto = new Boleto(tarifaAPagar, tarjeta.Numero.ToString(), Linea, tarjeta.Saldo);
+                Boleto boleto = new Boleto(tarjeta.ObtenerTarifa(tarifaAPagar), tarjeta.Numero.ToString(), Linea, tarjeta.Saldo);
                 boleto.ImprimirBoleto();
             }
 
@@ -40,6 +30,11 @@ namespace TarjetaSube
         public void MostrarTarifa()
         {
             Console.WriteLine($"Línea {Linea} - Tarifa: ${TARIFA_BASICA}");
+        }
+
+        public string ObtenerLinea()
+        {
+            return Linea;
         }
     }
 }
