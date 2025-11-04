@@ -14,7 +14,7 @@ namespace TarjetaSubeTest
         public void Setup()
         {
             tarjetaFranquicia = new FranquiciaCompleta(99999);
-            _tiempoSimulado = new DateTime(2025, 1, 6, 12, 0, 0); // Lunes 12:00 (dentro de franja)
+            _tiempoSimulado = new DateTime(2025, 1, 6, 12, 0, 0); // Lunes 12:00 (dentro de franja )
 
             tarjetaFranquicia.ObtenerFechaActual = () => _tiempoSimulado;
         }
