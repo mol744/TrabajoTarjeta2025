@@ -303,5 +303,140 @@ namespace TarjetaSubeTest
             // Assert
             Assert.AreEqual(5, tarjeta.CantidadViajesEsteMes());
         }
+
+        [Test]
+        public void TarjetaNormal_ReiniciaContadorAlCambiarDeMes_EnPagarBoleto_Test()
+        {
+            // Arrange
+            tarjeta.CargarSaldo(10000);
+
+            // Simular que estamos en un mes diferente al inicial
+            _tiempoSimulado = new DateTime(2025, 12, 1, 10, 0, 0); // Diciembre 2025
+
+            // Act - Hacer un viaje en diciembre (debería reiniciar contador)
+            bool resultado = tarjeta.PagarBoleto(1580m);
+
+            // Assert
+            Assert.IsTrue(resultado);
+            Assert.AreEqual(1, tarjeta.CantidadViajesEsteMes(), "Debería tener 1 viaje en diciembre");
+        }
+
+        [Test]
+        public void TarjetaNormal_ReiniciaContadorAlCambiarDeMes_EnObtenerTarifa_Test()
+        {
+            // Arrange
+            tarjeta.CargarSaldo(10000);
+
+            // Hacer algunos viajes en noviembre
+            for (int i = 1; i <= 5; i++)
+            {
+                tarjeta.PagarBoleto(1580m);
+            }
+
+            Assert.AreEqual(5, tarjeta.CantidadViajesEsteMes(), "Debería tener 5 viajes en noviembre");
+
+            // Cambiar a diciembre
+            _tiempoSimulado = new DateTime(2025, 12, 1, 10, 0, 0);
+
+            // Act - Obtener tarifa en diciembre (debería reiniciar contador)
+            decimal tarifa = tarjeta.ObtenerTarifa(1580m);
+
+            // Assert
+            Assert.AreEqual(1580m, tarifa, "Primer viaje del mes debería ser tarifa normal");
+            Assert.AreEqual(0, tarjeta.CantidadViajesEsteMes(), "Debería reiniciar contador a 0 en diciembre");
+        }
+
+        [Test]
+        public void TarjetaNormal_CantidadViajesEsteMes_RetornaCeroSiCambioMes_Test()
+        {
+            // Arrange
+            tarjeta.CargarSaldo(10000);
+
+            // Hacer viajes en noviembre
+            for (int i = 1; i <= 3; i++)
+            {
+                tarjeta.PagarBoleto(1580m);
+            }
+
+            Assert.AreEqual(3, tarjeta.CantidadViajesEsteMes(), "Debería tener 3 viajes en noviembre");
+
+            // Cambiar a diciembre
+            _tiempoSimulado = new DateTime(2025, 12, 1, 10, 0, 0);
+
+            // Act & Assert - CantidadViajesEsteMes debería retornar 0
+            Assert.AreEqual(0, tarjeta.CantidadViajesEsteMes(), "Debería retornar 0 si cambió el mes");
+        }
+
+        [Test]
+        public void TarjetaNormal_SimularCambioDeMes_FuncionaCorrectamente_Test()
+        {
+            // Arrange
+            tarjeta.CargarSaldo(10000);
+
+            // Hacer algunos viajes
+            for (int i = 1; i <= 5; i++)
+            {
+                tarjeta.PagarBoleto(1580m);
+            }
+
+            // Guardar mes actual
+            DateTime mesOriginal = _tiempoSimulado;
+
+            // Act - Simular cambio de mes
+            tarjeta.SimularCambioDeMes();
+
+            // Assert - Verificar que el método se ejecuta sin errores
+            // Este test principalmente verifica que no hay excepciones
+            Assert.DoesNotThrow(() => tarjeta.SimularCambioDeMes());
+        }
+
+        [Test]
+        public void TarjetaNormal_CambioDeAnio_ReiniciaContador_Test()
+        {
+            // Arrange
+            tarjeta.CargarSaldo(10000);
+
+            // Hacer viajes en noviembre 2025
+            for (int i = 1; i <= 5; i++)
+            {
+                tarjeta.PagarBoleto(1580m);
+            }
+
+            // Cambiar a enero 2026 (cambio de año)
+            _tiempoSimulado = new DateTime(2026, 1, 1, 10, 0, 0);
+
+            // Act - Hacer un viaje en enero 2026
+            bool resultado = tarjeta.PagarBoleto(1580m);
+
+            // Assert
+            Assert.IsTrue(resultado);
+            Assert.AreEqual(1, tarjeta.CantidadViajesEsteMes(), "Debería reiniciar contador al cambiar de año");
+        }
+
+        [Test]
+        public void TarjetaNormal_MultiplesCambiosDeMes_Test()
+        {
+            // Arrange
+            tarjeta.CargarSaldo(20000);
+
+            // Viaje en noviembre 2025
+            tarjeta.PagarBoleto(1580m);
+            Assert.AreEqual(1, tarjeta.CantidadViajesEsteMes());
+
+            // Cambiar a diciembre 2025
+            _tiempoSimulado = new DateTime(2025, 12, 15, 10, 0, 0);
+            tarjeta.PagarBoleto(1580m);
+            Assert.AreEqual(1, tarjeta.CantidadViajesEsteMes(), "Debería reiniciar en diciembre");
+
+            // Cambiar a enero 2026
+            _tiempoSimulado = new DateTime(2026, 1, 10, 10, 0, 0);
+            tarjeta.PagarBoleto(1580m);
+            Assert.AreEqual(1, tarjeta.CantidadViajesEsteMes(), "Debería reiniciar en enero");
+
+            // Volver a noviembre 2025 (debería reiniciar nuevamente)
+            _tiempoSimulado = new DateTime(2025, 11, 20, 10, 0, 0);
+            tarjeta.PagarBoleto(1580m);
+            Assert.AreEqual(1, tarjeta.CantidadViajesEsteMes(), "Debería reiniciar al volver a noviembre");
+        }
     }
 }
