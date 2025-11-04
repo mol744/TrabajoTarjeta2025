@@ -47,9 +47,16 @@ namespace TarjetaSube
             return true;
         }
 
-        public new decimal ObtenerTarifa(decimal tarifa)
+        public override decimal ObtenerTarifa(decimal tarifa)
         {
-            return 0m;
+            DateTime ahora = ObtenerFechaActual();
+
+            if (!EstaEnFranjaHorariaPermitida(ahora))
+            {
+                return tarifa; // Fuera de franja, tarifa completa
+            }
+
+            return 0m; // Dentro de franja, gratuito
         }
 
         public override string ObtenerTipoTarjeta()
@@ -61,6 +68,13 @@ namespace TarjetaSube
         {
             // Avanzar el tiempo simulado
             _tiempoSimulado = _tiempoSimulado.Add(tiempo);
+        }
+
+        // Métodos para testing
+        public void ForzarFecha(DateTime nuevaFecha)
+        {
+            _tiempoSimulado = nuevaFecha;
+            ObtenerFechaActual = () => _tiempoSimulado;
         }
     }
 }

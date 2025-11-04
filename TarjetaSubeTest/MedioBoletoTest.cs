@@ -51,21 +51,26 @@ namespace TarjetaSubeTest
         [Test]
         public void MedioBoleto_SaldoInsuficiente()
         {
-            tarjetaMedio.ResetearSaldo();
+            tarjetaMedio.ResetearViajes();
 
-            // Arrange
+            // Arrange - Crear NUEVA tarjeta con solo 500 de saldo
+            tarjetaMedio = new MedioBoleto(77778); // Usar número diferente
+            tarjetaMedio.CargarSaldo(500); // Solo 500 de saldo
+            tarjetaMedio.ObtenerFechaActual = () => _tiempoSimulado;
+
             decimal tarifa = 1580m;
 
-            bool primerViaje = tarjetaMedio.PagarBoleto(tarifa); // 10:00
+            // Act - Primer viaje a las 10:00 (790 > 500, pero permite saldo negativo)
+            bool primerViaje = tarjetaMedio.PagarBoleto(tarifa); // 500 - 790 = -290
             _tiempoSimulado = _tiempoSimulado.AddMinutes(6);
 
-            bool segundoViaje = tarjetaMedio.PagarBoleto(tarifa); // 10:06
+            // Segundo viaje con saldo negativo - debería fallar por superar límite negativo
+            bool segundoViaje = tarjetaMedio.PagarBoleto(tarifa); // -290 - 790 = -1080 (supera -1200)
 
             // Assert
-            Assert.IsFalse(segundoViaje, "El segundo viaje debería fallar por saldo insuficiente");
-
+            Assert.IsTrue(primerViaje, "Primer viaje debería funcionar (permite saldo negativo)");
+            Assert.IsFalse(segundoViaje, "El segundo viaje debería fallar por superar límite negativo");
         }
-
 
         [Test]
         public void MedioBoleto_PermiteDosViajesDespuesDe5Minutos_Test()
@@ -193,19 +198,30 @@ namespace TarjetaSubeTest
         public void MedioBoleto_RespetaLimiteNegativo_Test()
         {
             tarjetaMedio.ResetearViajes();
-            // Arrange
-            tarjetaMedio.CargarSaldo(2000); // Saldo bajo
 
-            // Act - Intentar pagar medio boleto (790) con saldo 2000
-            bool resultado = tarjetaMedio.PagarBoleto(1580m);
+            // Arrange - Crear NUEVA tarjeta con solo 2000 de saldo para probar límite negativo
+            tarjetaMedio = new MedioBoleto(77779); // Usar número diferente
+            tarjetaMedio.CargarSaldo(2000); // Solo 2000 de saldo
+            tarjetaMedio.ObtenerFechaActual = () => _tiempoSimulado;
+
+            // Act - Realizar viajes hasta superar el límite negativo
+            bool resultado1 = tarjetaMedio.PagarBoleto(1580m); // 2000 - 790 = 1210
             _tiempoSimulado = _tiempoSimulado.AddMinutes(6);
-            resultado = tarjetaMedio.PagarBoleto(1580m);
+
+            bool resultado2 = tarjetaMedio.PagarBoleto(1580m); // 1210 - 790 = 420  
             _tiempoSimulado = _tiempoSimulado.AddMinutes(6);
-            resultado = tarjetaMedio.PagarBoleto(1580m);
+
+            bool resultado3 = tarjetaMedio.PagarBoleto(1580m); // 420 - 1580 = -1160 (dentro del límite -1200)
+            _tiempoSimulado = _tiempoSimulado.AddMinutes(6);
+
+            bool resultado4 = tarjetaMedio.PagarBoleto(1580m); // -1160 - 1580 = -2740 (supera -1200)
 
             // Assert
-            Assert.IsTrue(resultado, "");
-            //Assert.AreEqual(500 - 790, tarjetaMedio.Saldo); // -290
+            Assert.IsTrue(resultado1, "Primer viaje debería funcionar");
+            Assert.IsTrue(resultado2, "Segundo viaje debería funcionar");
+            Assert.IsTrue(resultado3, "Tercer viaje debería funcionar (dentro del límite negativo)");
+            Assert.IsFalse(resultado4, "Cuarto viaje debería fallar (supera límite negativo de -1200)");
+            Assert.AreEqual(-1160, tarjetaMedio.Saldo, "El saldo debería quedar en -1160 después del tercer viaje");
         }
 
         [Test]
@@ -231,6 +247,27 @@ namespace TarjetaSubeTest
         {
             // Act & Assert
             Assert.AreEqual("MedioBoleto", tarjetaMedio.ObtenerTipoTarjeta());
+        }
+
+        [Test]
+        public void MedioBoleto_PermiteTrasbordo_DespuesDe5Minutos_Test()
+        {
+            // Arrange
+            decimal tarifa = 1580m;
+            tarjetaMedio.ResetearViajes();
+
+            // Act - Primer viaje
+            bool primerViaje = tarjetaMedio.PagarBoleto(tarifa); // 10:00
+
+            // Avanzar 6 minutos (más de 5 minutos para permitir trasbordo)
+            _tiempoSimulado = _tiempoSimulado.AddMinutes(6);
+
+            // Segundo viaje debería permitirse (para trasbordo)
+            bool segundoViaje = tarjetaMedio.PagarBoleto(tarifa); // 10:06
+
+            // Assert
+            Assert.IsTrue(primerViaje, "Primer viaje debería ser exitoso");
+            Assert.IsTrue(segundoViaje, "Segundo viaje debería permitirse después de 5 minutos para trasbordo");
         }
     }
 }
