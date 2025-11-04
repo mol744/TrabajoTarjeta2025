@@ -66,6 +66,13 @@ namespace TarjetaSube
             return tarifa;
         }
 
+        public void ResetearSaldo()
+        {
+            Saldo = 0;
+            Acargar = 0;
+            Console.WriteLine("Saldo y carga pendiente reseteados a 0.");
+        }
+
         public abstract string ObtenerTipoTarjeta();
 
         public decimal ConsultarSaldo()

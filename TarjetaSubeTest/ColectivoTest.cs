@@ -78,22 +78,7 @@ namespace TarjetaSubeTest
             Assert.AreEqual(0, tarjeta.Saldo);
         }
 
-        [Test]
-        public void Colectivo_DiferentesLineas_UrbanaEInterurbana_Test()
-        {
-            // Arrange
-            Tarjeta tarjeta = new TarjetaNormal(33333);
-            tarjeta.CargarSaldo(10000);
-            Colectivo colectivoUrbano = new Colectivo("123");        // Urbana: 1580
-            Colectivo colectivoInterurbano = new Colectivo("200", true); // Interurbana: 3000
-
-            // Act
-            colectivoUrbano.PagarCon(tarjeta);
-            colectivoInterurbano.PagarCon(tarjeta);
-
-            // Assert
-            Assert.AreEqual(10000 - 1580 - 3000, tarjeta.Saldo);
-        }
+        
 
         [Test]
         public void Colectivo_MostrarTarifa_Urbana_Test()

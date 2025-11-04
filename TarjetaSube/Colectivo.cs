@@ -27,7 +27,7 @@ namespace TarjetaSube
                 var (fecha, lineaAnterior) = _ultimosViajes[tarjeta.Numero];
                 if ((DateTime.Now - fecha).TotalMinutes <= 60 && lineaAnterior != this.Linea)
                 {
-                    tarifaAPagar = 0;
+                    tarifaAPagar = 0; 
                     Console.WriteLine("TRASBORDO GRATUITO");
                 }
             }
