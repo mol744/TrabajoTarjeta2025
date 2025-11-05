@@ -1,7 +1,20 @@
+# Trabajo Tarjeta 2025
+### Integrantes del grupo:
+- García, Tomás Manuel
+- Morales, Joaquín Francisco
+
+### Cobertura del código:
 [![codecov](https://codecov.io/gh/mol744/TrabajoTarjeta2025/graph/badge.svg?token=UIMQ8ID29H)](https://codecov.io/gh/mol744/TrabajoTarjeta2025)
 
-# Trabajo Tarjeta 2025
+### Observaciones y aclaraciones sobre la implementación del "Sistema Sube":
+- La lógica utilizada para los tipos de tarjeta es de Herencia con la clase Tarjeta como abstracta.
+- División de clases entre archivos, contando las variaciones de tarjeta.
+- Este último punto, trae consigo la NO posibilidad de tener más de un beneficio por tarjeta, a menos que se cree una clase específica para cada caso de doble beneficio (ejemplo: MedioBoletoGratuito).
+- Los Tests están organizados según las clases que cubren principalmente, a pesar de que utilicen métodos de otras clases.
+- La lógica del trasbordo se haya en la clase Colectivo, donde se verifica que el último pago de t tarjeta en l linea haya sido entre los últimos 60 minutos para aplicar el trasbordo correspondiente.
+- Los colectivos InterUrbanos no permiten tarjetas con beneficios, solo normales.
 
+# Enunciado del TP
 El siguiente trabajo es un enunciado iterativo. Regularmente se ampliará y/o modificará el enunciado.
 
 <br>
