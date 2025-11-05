@@ -64,17 +64,5 @@ namespace TarjetaSube
             return "FranquiciaCompleta";
         }
 
-        public void SimularPasoTiempo(TimeSpan tiempo)
-        {
-            // Avanzar el tiempo simulado
-            _tiempoSimulado = _tiempoSimulado.Add(tiempo);
-        }
-
-        // Métodos para testing
-        public void ForzarFecha(DateTime nuevaFecha)
-        {
-            _tiempoSimulado = nuevaFecha;
-            ObtenerFechaActual = () => _tiempoSimulado;
-        }
     }
 }

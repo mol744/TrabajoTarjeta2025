@@ -63,6 +63,17 @@ namespace TarjetaSubeTest
         }
 
         [Test]
+        public void ObtenerTarifa_FranquiciaCompleta_FueraFranja_Test()
+        {
+            // Arrange - Fuera de franja horaria (sábado)
+            _tiempoSimulado = new DateTime(2025, 1, 4, 12, 0, 0); // Sábado 12:00
+            decimal tarifaCompleta = 1580m;
+
+            // Act & Assert - Debería devolver la tarifa completa
+            Assert.AreEqual(tarifaCompleta, tarjetaFranquicia.ObtenerTarifa(tarifaCompleta));
+        }
+
+        [Test]
         public void FranquiciaCompleta_NoPuedePagar_FueraFranjaHoraria_Madrugada_Test()
         {
             // Arrange - Martes 5:00 (fuera de franja)

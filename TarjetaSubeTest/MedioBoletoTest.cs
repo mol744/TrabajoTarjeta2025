@@ -19,8 +19,8 @@ namespace TarjetaSubeTest
             tarjetaMedio.CargarSaldo(10000);
             tarjetaMedio.ResetearViajes();
 
-            // Configurar tiempo simulado para testing
-            _tiempoSimulado = new DateTime(2025, 1, 1, 10, 0, 0);
+            // Configurar tiempo simulado para testing - Lunes 10:00 (dentro de franja)
+            _tiempoSimulado = new DateTime(2025, 1, 6, 10, 0, 0); // Lunes
             _tiemposLlamadas = new List<DateTime>();
 
             tarjetaMedio.ObtenerFechaActual = () =>
@@ -163,8 +163,8 @@ namespace TarjetaSubeTest
 
             int viajesHoy = tarjetaMedio.CantidadViajesHoy();
 
-            // Simular nuevo día (avanzar 24 horas)
-            _tiempoSimulado = _tiempoSimulado.AddDays(1);
+            // Simular nuevo día (avanzar 24 horas) - dentro de franja horaria
+            _tiempoSimulado = new DateTime(2025, 1, 7, 10, 0, 0); // Martes 10:00
 
             // Hacer otro viaje - debería contar como primer viaje del nuevo día
             tarjetaMedio.PagarBoleto(tarifa);
@@ -177,8 +177,9 @@ namespace TarjetaSubeTest
 
         [Test]
         public void MedioBoleto_ObtenerTarifa_CalculaCorrectamente()
-        {
+        {   _tiempoSimulado = new DateTime(2025, 1, 6, 10, 0, 0); // Lunes 10:00
             tarjetaMedio.ResetearViajes();
+
             // Primeros 2 viajes - tarifa media
             Assert.AreEqual(790m, tarjetaMedio.ObtenerTarifa(1580m));
 
@@ -186,12 +187,47 @@ namespace TarjetaSubeTest
             Assert.AreEqual(790m, tarjetaMedio.ObtenerTarifa(1580m));
 
             _tiempoSimulado = _tiempoSimulado.AddMinutes(6);
-            tarjetaMedio.PagarBoleto(1580m); // Segundo viaje
-            Assert.AreEqual(790m, tarjetaMedio.ObtenerTarifa(1580m));
-
-            _tiempoSimulado = _tiempoSimulado.AddMinutes(6);
-            tarjetaMedio.PagarBoleto(1580m); // Tercer viaje (tarifa completa)
+            tarjetaMedio.PagarBoleto(1580m); // Segundo viaje (el siguiente sería tarifa completa)
             Assert.AreEqual(1580m, tarjetaMedio.ObtenerTarifa(1580m));
+        }
+
+        [Test]
+        public void MedioBoleto_ObtenerTarifa_FueraFranjaHoraria_Test()
+        {
+            // Arrange - Fuera de franja horaria (sábado)
+            _tiempoSimulado = new DateTime(2025, 1, 4, 12, 0, 0); // Sábado 12:00
+            decimal tarifaCompleta = 1580m;
+
+            // Act & Assert - Debería devolver tarifa completa fuera de franja
+            Assert.AreEqual(tarifaCompleta, tarjetaMedio.ObtenerTarifa(tarifaCompleta));
+        }
+
+        [Test]
+        public void MedioBoleto_NoPuedePagar_FueraFranjaHoraria_Test()
+        {
+            // Arrange - Fuera de franja horaria (domingo)
+            _tiempoSimulado = new DateTime(2025, 1, 5, 14, 0, 0); // Domingo 14:00
+            Colectivo colectivo = new Colectivo("123");
+
+            // Act
+            bool puedePagar = colectivo.PagarCon(tarjetaMedio);
+
+            // Assert - No debería poder pagar fuera de franja
+            Assert.IsFalse(puedePagar);
+        }
+
+        [Test]
+        public void MedioBoleto_PuedePagar_DentroFranjaHoraria_Test()
+        {
+            // Arrange - Dentro de franja horaria (viernes 15:00)
+            _tiempoSimulado = new DateTime(2025, 1, 10, 15, 0, 0); // Viernes 15:00
+            Colectivo colectivo = new Colectivo("123");
+
+            // Act
+            bool puedePagar = colectivo.PagarCon(tarjetaMedio);
+
+            // Assert - Debería poder pagar dentro de franja
+            Assert.IsTrue(puedePagar);
         }
 
         [Test]
@@ -268,6 +304,23 @@ namespace TarjetaSubeTest
             // Assert
             Assert.IsTrue(primerViaje, "Primer viaje debería ser exitoso");
             Assert.IsTrue(segundoViaje, "Segundo viaje debería permitirse después de 5 minutos para trasbordo");
+        }
+
+        [Test]
+        public void MedioBoleto_EstaEnFranjaHorariaPermitida_ValidaCorrectamente_Test()
+        {
+            // Test directo del método de validación
+
+            // Casos válidos
+            Assert.IsTrue(tarjetaMedio.EstaEnFranjaHorariaPermitida(new DateTime(2025, 1, 6, 10, 0, 0))); // Lunes 10:00
+            Assert.IsTrue(tarjetaMedio.EstaEnFranjaHorariaPermitida(new DateTime(2025, 1, 7, 6, 0, 0)));   // Martes 6:00
+            Assert.IsTrue(tarjetaMedio.EstaEnFranjaHorariaPermitida(new DateTime(2025, 1, 8, 21, 59, 0))); // Miércoles 21:59
+
+            // Casos inválidos
+            Assert.IsFalse(tarjetaMedio.EstaEnFranjaHorariaPermitida(new DateTime(2025, 1, 4, 12, 0, 0))); // Sábado 12:00
+            Assert.IsFalse(tarjetaMedio.EstaEnFranjaHorariaPermitida(new DateTime(2025, 1, 5, 12, 0, 0))); // Domingo 12:00
+            Assert.IsFalse(tarjetaMedio.EstaEnFranjaHorariaPermitida(new DateTime(2025, 1, 6, 5, 59, 0))); // Lunes 5:59
+            Assert.IsFalse(tarjetaMedio.EstaEnFranjaHorariaPermitida(new DateTime(2025, 1, 7, 22, 0, 0))); // Martes 22:00
         }
     }
 }
