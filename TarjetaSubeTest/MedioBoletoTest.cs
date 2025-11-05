@@ -208,6 +208,7 @@ namespace TarjetaSubeTest
             // Arrange - Fuera de franja horaria (domingo)
             _tiempoSimulado = new DateTime(2025, 1, 5, 14, 0, 0); // Domingo 14:00
             Colectivo colectivo = new Colectivo("123");
+            tarjetaMedio.ResetearSaldo();
 
             // Act
             bool puedePagar = colectivo.PagarCon(tarjetaMedio);
@@ -219,6 +220,7 @@ namespace TarjetaSubeTest
         [Test]
         public void MedioBoleto_PuedePagar_DentroFranjaHoraria_Test()
         {
+            tarjetaMedio.ResetearSaldo();
             // Arrange - Dentro de franja horaria (viernes 15:00)
             _tiempoSimulado = new DateTime(2025, 1, 10, 15, 0, 0); // Viernes 15:00
             Colectivo colectivo = new Colectivo("123");
@@ -263,6 +265,7 @@ namespace TarjetaSubeTest
         [Test]
         public void MedioBoleto_TiempoDesdeUltimoViaje_CalculaCorrectamente()
         {
+            tarjetaMedio.ResetearSaldo();
             // Act & Assert - Sin viajes
             Assert.IsNull(tarjetaMedio.TiempoDesdeUltimoViaje());
 

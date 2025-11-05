@@ -20,19 +20,51 @@ namespace TarjetaSube
         public bool PagarCon(Tarjeta tarjeta)
         {
             decimal tarifaAPagar = EsInterurbana ? TARIFA_INTERURBANA : TARIFA_BASICA;
+            bool esTrasbordo = false;
 
-            // Aplicar trasbordo gratuito (solo para líneas urbanas)
+            // Verificar trasbordo gratuito (solo para líneas urbanas)
             if (!EsInterurbana && _ultimosViajes.ContainsKey(tarjeta.Numero))
             {
                 var (fecha, lineaAnterior) = _ultimosViajes[tarjeta.Numero];
-                if ((DateTime.Now - fecha).TotalMinutes <= 60 && lineaAnterior != this.Linea)
+                if ((DateTime.Now - fecha).TotalMinutes <= 60 && lineaAnterior != Linea)
                 {
-                    tarifaAPagar = 0; 
+                    tarifaAPagar = 0;
+                    esTrasbordo = true;
                     Console.WriteLine("TRASBORDO GRATUITO");
                 }
             }
 
-            bool pagoExitoso = tarjeta.PagarBoleto(tarifaAPagar);
+            bool pagoExitoso;
+
+            if (esTrasbordo)
+            {
+
+                decimal tarifaReal = tarjeta.ObtenerTarifa(EsInterurbana ? TARIFA_INTERURBANA : TARIFA_BASICA);
+
+                if (tarifaReal == 0)
+                {
+                    pagoExitoso = true; // Trasbordo gratuito permitido
+                }
+                else
+                {
+                    pagoExitoso = (tarjeta.Saldo - tarifaReal) >= Tarjeta.SALDO_MINIMO;
+                }
+
+                if (pagoExitoso)
+                {
+                    Console.WriteLine("Trasbordo exitoso");
+                }
+                else
+                {
+                    Console.WriteLine("No se puede realizar el trasbordo");
+                    return false;
+                }
+            }
+            else
+            {
+                // Viaje normal
+                pagoExitoso = tarjeta.PagarBoleto(tarifaAPagar);
+            }
 
             if (pagoExitoso)
             {
@@ -41,7 +73,7 @@ namespace TarjetaSube
                 {
                     _ultimosViajes[tarjeta.Numero] = (DateTime.Now, this.Linea);
                 }
-                Boleto boleto = new Boleto(tarjeta.ObtenerTarifa(tarifaAPagar), tarjeta.Numero.ToString(), Linea, tarjeta.Saldo);
+                Boleto boleto = new Boleto(tarifaAPagar, tarjeta.Numero.ToString(), Linea, tarjeta.Saldo);
                 boleto.ImprimirBoleto();
             }
 

@@ -4,7 +4,7 @@ namespace TarjetaSube
 {
     public class FranquiciaCompleta : Tarjeta
     {
-        private DateTime _tiempoSimulado;
+        public DateTime _tiempoSimulado;
 
         // Propiedad para testing (similar a MedioBoleto)
         public Func<DateTime> ObtenerFechaActual { get; set; } = () => DateTime.Now;

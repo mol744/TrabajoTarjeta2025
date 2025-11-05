@@ -8,6 +8,16 @@ namespace TarjetaSubeTest
     [TestFixture]
     public class ColectivoTests
     {
+        private DateTime _tiempoSimulado;
+
+        [SetUp]
+        public void Setup()
+        {
+            // Configuración previa a cada test si es necesario
+            _tiempoSimulado = new DateTime(2025, 1, 6, 10, 0, 0); // Lunes 10:00hs ()
+        }
+
+
         [Test]
         public void ObtenerTarifaBasicaDeLaLinea_Test()
         {
@@ -169,15 +179,16 @@ namespace TarjetaSubeTest
         {
             // Arrange
             var tarjeta = new MedioBoleto(44444);
+            tarjeta._tiempoSimulado = new DateTime(2025, 1, 6, 10, 0, 0); // Lunes 10:00hs
             tarjeta.CargarSaldo(4000);
             var colectivo = new Colectivo("200", true); // Interurbana: 3000
 
             // Act
             bool resultado = colectivo.PagarCon(tarjeta);
 
-            // Assert - Medio boleto aplica a interurbana también (3000 / 2 = 1500)
-            Assert.IsTrue(resultado);
-            Assert.AreEqual(4000 - 1500, tarjeta.Saldo);
+            // Assert - MedioBoleto NO debería funcionar en interurbanas
+            Assert.IsFalse(resultado, "MedioBoleto NO debería funcionar en interurbanas");
+            Assert.AreEqual(4000, tarjeta.Saldo, "El saldo no debería cambiar cuando falla el pago");
         }
 
         [Test]
@@ -185,16 +196,35 @@ namespace TarjetaSubeTest
         {
             // Arrange
             var tarjeta = new BoletoGratuito(55555);
+            tarjeta._tiempoSimulado = new DateTime(2025, 1, 6, 10, 0, 0); // Lunes 10:00hs
             tarjeta.CargarSaldo(2000);
             var colectivo = new Colectivo("200", true); // Interurbana: 3000
 
             // Act
             bool resultado = colectivo.PagarCon(tarjeta);
 
-            // Assert - Boleto gratuito no descuenta saldo incluso en interurbana
-            Assert.IsTrue(resultado);
-            Assert.AreEqual(2000, tarjeta.Saldo);
+            // Assert - BoletoGratuito NO debería funcionar en interurbanas
+            Assert.IsFalse(resultado, "BoletoGratuito NO debería funcionar en interurbanas");
+            Assert.AreEqual(2000, tarjeta.Saldo, "El saldo no debería cambiar cuando falla el pago");
         }
+
+        [Test]
+        public void Colectivo_Interurbana_ConFranquiciaCompleta_Test()
+        {
+            // Arrange
+            var tarjeta = new FranquiciaCompleta(66666);
+            tarjeta._tiempoSimulado = new DateTime(2025, 1, 6, 10, 0, 0); // Lunes 10:00hs
+            tarjeta.CargarSaldo(2000);
+            var colectivo = new Colectivo("200", true); // Interurbana: 3000
+
+            // Act
+            bool resultado = colectivo.PagarCon(tarjeta);
+
+            // Assert - FranquiciaCompleta NO debería funcionar en interurbanas
+            Assert.IsFalse(resultado, "FranquiciaCompleta NO debería funcionar en interurbanas");
+            Assert.AreEqual(2000, tarjeta.Saldo, "El saldo no debería cambiar cuando falla el pago");
+        }
+
 
         [Test]
         public void Colectivo_Constructor_DefaultEsUrbana_Test()
@@ -263,6 +293,65 @@ namespace TarjetaSubeTest
         }
 
         [Test]
+        public void Trasbordo_Funciona_ConDiferentesTiposTarjeta_Test()
+        {
+            // Arrange
+            TarjetaNormal tarjetaNormal = new TarjetaNormal(10001);
+            BoletoGratuito tarjetaGratuita = new BoletoGratuito(10002);
+            MedioBoleto tarjetaMedio = new MedioBoleto(10003);
+            FranquiciaCompleta tarjetaFranquicia = new FranquiciaCompleta(10004);
+
+            // Configurar tiempos dentro de franja horaria
+            DateTime tiempoSimulado = new DateTime(2025, 1, 6, 10, 0, 0); // Lunes 10:00
+            tarjetaGratuita.ObtenerFechaActual = () => tiempoSimulado;
+            tarjetaMedio.ObtenerFechaActual = () => tiempoSimulado;
+            tarjetaFranquicia.ObtenerFechaActual = () => tiempoSimulado;
+
+            // Cargar saldo
+            tarjetaNormal.CargarSaldo(5000);
+            tarjetaGratuita.CargarSaldo(5000);
+            tarjetaMedio.CargarSaldo(5000);
+            tarjetaFranquicia.CargarSaldo(5000);
+
+            Colectivo colectivo123 = new Colectivo("123");
+            Colectivo colectivo153 = new Colectivo("153");
+
+            // Test TarjetaNormal
+            colectivo123.PagarCon(tarjetaNormal);
+            decimal saldoNormal = tarjetaNormal.Saldo;
+            bool trasbordoNormal = colectivo153.PagarCon(tarjetaNormal);
+            Assert.IsTrue(trasbordoNormal, "TarjetaNormal debería permitir trasbordo");
+            Assert.AreEqual(saldoNormal, tarjetaNormal.Saldo, "TarjetaNormal no debería cobrar en trasbordo");
+
+            // Test BoletoGratuito - el trasbordo NO debería contar como viaje gratuito
+            tarjetaGratuita.ResetearViajes();
+            colectivo123.PagarCon(tarjetaGratuita);
+            Assert.AreEqual(1, tarjetaGratuita.CantidadViajesGratuitosHoy(), "Primer viaje debería contar como 1 viaje gratuito");
+
+            tiempoSimulado = tiempoSimulado.AddMinutes(30);
+            bool trasbordoGratuito = colectivo153.PagarCon(tarjetaGratuita);
+            Assert.IsTrue(trasbordoGratuito, "BoletoGratuito debería permitir trasbordo");
+            Assert.AreEqual(1, tarjetaGratuita.CantidadViajesGratuitosHoy(), "El trasbordo NO debería contar como viaje gratuito adicional");
+
+            // Test MedioBoleto - el trasbordo NO debería contar como viaje
+            tarjetaMedio.ResetearViajes();
+            colectivo123.PagarCon(tarjetaMedio);
+            Assert.AreEqual(1, tarjetaMedio.CantidadViajesHoy(), "Primer viaje debería contar como 1 viaje");
+
+            tiempoSimulado = tiempoSimulado.AddMinutes(30);
+            bool trasbordoMedio = colectivo153.PagarCon(tarjetaMedio);
+            Assert.IsTrue(trasbordoMedio, "MedioBoleto debería permitir trasbordo");
+            Assert.AreEqual(1, tarjetaMedio.CantidadViajesHoy(), "El trasbordo NO debería contar como viaje adicional");
+
+            // Test FranquiciaCompleta
+            bool primerViajeFranquicia = colectivo123.PagarCon(tarjetaFranquicia);
+            bool trasbordoFranquicia = colectivo153.PagarCon(tarjetaFranquicia);
+            Assert.IsTrue(primerViajeFranquicia, "FranquiciaCompleta debería permitir primer viaje");
+            Assert.IsTrue(trasbordoFranquicia, "FranquiciaCompleta debería permitir trasbordo");
+            Assert.AreEqual(5000, tarjetaFranquicia.Saldo, "FranquiciaCompleta no debería cobrar en trasbordo");
+        }
+
+        [Test]
         public void No_Trasbordo_MismaLinea_Test()
         {
             // Arrange
@@ -298,33 +387,6 @@ namespace TarjetaSubeTest
             // Assert
             Assert.IsTrue(resultado, "Debería poder pagar primer viaje");
             Assert.AreEqual(2000 - 1580, tarjeta.Saldo, "Debería cobrar tarifa normal sin viaje previo");
-        }
-
-        [Test]
-        public void Trasbordo_Funciona_ConDiferentesTiposTarjeta_Test()
-        {
-            // Arrange - Probar solo con tarjetas que no tienen restricción de tiempo
-            TarjetaNormal tarjetaNormal = new TarjetaNormal(10001);
-            BoletoGratuito tarjetaGratuita = new BoletoGratuito(10003);
-
-            tarjetaNormal.CargarSaldo(5000);
-            tarjetaGratuita.CargarSaldo(5000);
-
-            Colectivo colectivo123 = new Colectivo("123");
-            Colectivo colectivo153 = new Colectivo("153");
-
-            // Act & Assert - TarjetaNormal y BoletoGratuito permiten trasbordo
-            colectivo123.PagarCon(tarjetaNormal);
-            decimal saldoNormal = tarjetaNormal.Saldo;
-            bool trasbordoNormal = colectivo153.PagarCon(tarjetaNormal);
-            Assert.IsTrue(trasbordoNormal, "TarjetaNormal debería permitir trasbordo");
-            Assert.AreEqual(saldoNormal, tarjetaNormal.Saldo, "TarjetaNormal no debería cobrar en trasbordo");
-
-            colectivo123.PagarCon(tarjetaGratuita);
-            decimal saldoGratuito = tarjetaGratuita.Saldo;
-            bool trasbordoGratuito = colectivo153.PagarCon(tarjetaGratuita);
-            Assert.IsTrue(trasbordoGratuito, "BoletoGratuito debería permitir trasbordo");
-            Assert.AreEqual(saldoGratuito, tarjetaGratuita.Saldo, "BoletoGratuito no debería cobrar en trasbordo");
         }
 
         [Test]

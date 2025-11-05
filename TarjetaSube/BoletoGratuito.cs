@@ -7,7 +7,7 @@ namespace TarjetaSube
     public class BoletoGratuito : Tarjeta
     {
         private List<DateTime> _viajesDelDia;
-        private DateTime _tiempoSimulado;
+        public DateTime _tiempoSimulado;
 
         public Func<DateTime> ObtenerFechaActual { get; set; } = () => DateTime.Now;
 
